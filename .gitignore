@@ -1,12 +1,23 @@
+# Don't need precompiled java stuff
 *.class
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# non essential preference files
+*.project
+*.classpath
+*.settings
+
+# bin not needed for source compilation
+bin/
+
+# Ignore any error text output by Application.java
+errors.txt
