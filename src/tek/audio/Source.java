@@ -1,5 +1,6 @@
 package tek.audio;
 
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
@@ -11,7 +12,6 @@ import java.nio.FloatBuffer;
 public class Source {
 	public final int id;
 	private boolean dead = false;
-	private FloatBuffer posbuffer;
 	
 	private boolean enabled = false;
 	private boolean play = false, pause = false; //stopped = false false, paused = 0 + 1 or 1 + 1, playing = 1 + 0
@@ -23,31 +23,30 @@ public class Source {
 	
 	{
 		position = new Vector3f();
-		posbuffer = BufferUtils.createFloatBuffer(3);
 	}
 	
 	public Sound sound;
 	
-	protected Source(){
+	public Source(){
 		id = alGenSources();
 	}
 	
 	public Source(Sound sound){
 		this.sound = sound;
 		
-		posbuffer.put(new float[]{
-				position.x,
-				position.y,
-				position.z});
-		posbuffer.flip();
 		
 		id = alGenSources();
 		
 		AL10.alSourcei(id, AL10.AL_BUFFER, sound.id);
-		AL10.alSourcefv(id, AL10.AL_POSITION, posbuffer);
+		AL10.alSource3f(id, AL10.AL_POSITION, position.x, position.y, position.z);
 		
 		if(AL10.alGetError() != AL10.AL_NO_ERROR)
 			System.err.println("AL ERROR");
+	}
+	
+	public void setPosition(Vector2f position){
+		this.position.set(position.x, position.y, 0f);
+		AL10.alSource3f(id, AL10.AL_POSITION, position.x, position.y, 0f);
 	}
 	
 	public void setSound(Sound sound){

@@ -3,9 +3,12 @@ package tek.runtime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.joml.Vector3f;
+
 import tek.render.Camera;
 import tek.render.Shader;
 import tek.render.TextureSheet;
+import tek.runtime.ParticleSystem.Particle;
 
 public class Scene {
 	public static Scene current = null;
@@ -17,11 +20,15 @@ public class Scene {
 	public ArrayList<GameObject> gameObjects;
 	public HashMap<Shader, ArrayList<GameObject>> renderables; 
 	
+	public ArrayList<ParticleSystem> particleSystems;
+	
 	{
 		camera = new Camera();
 		
 		gameObjects = new ArrayList<GameObject>();
 		renderables = new HashMap<Shader, ArrayList<GameObject>>();
+		
+		particleSystems = new ArrayList<ParticleSystem>();
 	}
 	
 	public Scene(){
@@ -29,6 +36,14 @@ public class Scene {
 	
 	public void makeCurrent(){
 		current = this;
+	}
+	
+	public void add(ParticleSystem particleSystem){
+		particleSystems.add(particleSystem);
+	}
+	
+	public void remove(ParticleSystem particleSystem){
+		particleSystems.remove(particleSystem);
 	}
 	
 	public void add(GameObject gameObject){
@@ -77,6 +92,10 @@ public class Scene {
 		for(GameObject gameObject : gameObjects){
 			gameObject.update(delta);
 		}
+		
+		for(ParticleSystem system : particleSystems){
+			system.update(delta);
+		}
 	}
 		
 	public void render(long delta){
@@ -117,6 +136,33 @@ public class Scene {
 			
 			Shader.unbind();
 		}
+		
+		for(ParticleSystem system : particleSystems){
+			render(system);
+		}
+	}
+	
+	public void render(ParticleSystem psystem){
+		if(psystem.particles.size() == 0)
+			return;
+		
+		psystem.render();
+		
+		psystem.shader.bind();
+		psystem.shader.set("projection", camera.getProjection());
+		psystem.shader.set("view", camera.getView());
+		
+		psystem.shader.set("particleZ", psystem.transform.layer * Transform.LAYER_MOD);
+		
+		for(Particle particle : psystem.particles){
+			psystem.shader.set("particlePos", particle.position);
+			//TODO Update the color transitions
+			psystem.shader.set("particleColor", psystem.startColor);
+			
+			GameObject.quad.draw();
+		}
+		
+		Shader.unbind();
 	}
 	
 	public void destroy(boolean fullExit){

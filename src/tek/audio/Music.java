@@ -28,6 +28,7 @@ public class Music {
 	
 	private boolean loop = false;
 	private boolean playing = false, pause = false;
+	private boolean enabled = true;
 	
 	private float gain = 0.8f;
 	
@@ -51,6 +52,23 @@ public class Music {
 	
 	public boolean isPaused(){
 		return pause;
+	}
+	
+	public boolean isEnabled(){
+		return enabled;
+	}
+	
+	public void enable(){
+		if(!enabled){
+			enabled = true;
+		}
+	}
+	
+	public void disable(){
+		if(enabled){
+			enabled = false;
+			pause();
+		}
 	}
 	
 	public void play(){

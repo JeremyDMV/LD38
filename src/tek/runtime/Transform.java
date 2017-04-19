@@ -85,7 +85,7 @@ public class Transform {
 		updateNeeded = true;
 	}
 	
-	public void setPositon(Vector2f vec){
+	public void setPosition(Vector2f vec){
 		setPosition(vec.x, vec.y);
 	}
 	

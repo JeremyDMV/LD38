@@ -208,6 +208,8 @@ public class Engine {
 			if(window.isCloseRequested())
 				exit();
 		
+		mixer.update(delta);
+		
 		//update the scene
 		scene.update(delta);
 		//update the game

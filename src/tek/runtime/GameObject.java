@@ -2,6 +2,7 @@ package tek.runtime;
 
 import java.util.Arrays;
 
+import tek.audio.Source;
 import tek.render.Animation;
 import tek.render.Quad;
 import tek.render.Shader;
@@ -10,23 +11,29 @@ import tek.render.Texture;
 public abstract class GameObject {
 	public static Quad quad = new Quad(1f, 1f);
 	
+	//general rendering
 	public Shader shader = Scene.current.defaultShader;
 	
+	//object information
 	public String[] tags;
-	
 	public Transform transform;
 	
+	//texturing
 	public Texture texture;
 	public int subTexture = -1;
 	
 	public int currentAnimation = -1;
 	public Animation[] animations;
 	
+	//sound 
+	public Source source;
+	
 	{
 		transform = new Transform();
 	}
 	
 	public GameObject(){
+		Start();
 	}
 	
 	public GameObject(GameObject gameObject){
@@ -40,6 +47,8 @@ public abstract class GameObject {
 		
 		this.animations = gameObject.animations;
 		this.currentAnimation = gameObject.currentAnimation;
+		
+		Start();
 	}
 	
 	public void update(long delta){
@@ -47,8 +56,17 @@ public abstract class GameObject {
 			animations[currentAnimation].update((float)delta);
 			subTexture = animations[currentAnimation].getFrame();
 		}
+		
+		if(source != null){
+			if(!source.position.equals(transform.position)){
+				source.setPosition(transform.position);
+			}
+		}
+		
 		Update(delta);
 	}
+	
+	public abstract void Start();
 	
 	public abstract void Update(long delta);
 	
