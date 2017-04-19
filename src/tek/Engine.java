@@ -16,6 +16,8 @@ public class Engine {
 	
 	public static boolean autoSavePreferences = false;
 	
+	public static boolean EXIT_ON_CLOSE = true;
+	
 	private static Engine instance = null;
 	
 	private boolean running = false;
@@ -30,10 +32,10 @@ public class Engine {
 	private int fps = 0, ups = 0;
 	
 	//the game preferences
-	private Preferences Preferences;
+	private Preferences preferences;
 	
 	//the game interface
-	private Interface Interface;
+	private Interface _interface;
 	
 	//the game scene
 	private Scene scene;
@@ -44,30 +46,31 @@ public class Engine {
 	//the game's audio
 	private Mixer mixer;
 	
-	public Engine(Preferences Preferences, Interface Interface){
+	public Engine(Interface _interface, Preferences preferences){
 		//set the game preferences variable
-		this.Preferences = Preferences;
+		this.preferences = preferences;
 		
 		//set the game interface
-		this.Interface = Interface;
+		this._interface = _interface;
 
 		instance = this;
 		
 		//create the window from game preferences
-		window = new Window(Preferences.x, Preferences.y, Preferences.width, Preferences.height, 
+		window = new Window(preferences.x, preferences.y, preferences.width, preferences.height, 
 				"Test Window");
+		
+		//create the window's instance
+		window.create();
 		
 		//setup the mixer
 		mixer = new Mixer();
 		
-		//setup the mouse
-		new Mouse();
-		
 		//setup the default scene
 		scene = new Scene();
-
+		scene.makeCurrent();
+		
 		//call start in the game interface
-		Interface.start();
+		_interface.start();
 		
 		//enter the game loop
 		loop();
@@ -193,7 +196,7 @@ public class Engine {
 		Joystick.updateAll();
 		
 		//call for any input methods to be used
-		Interface.input(delta);
+		_interface.input(delta);
 	}
 	
 	/** Update everything based on the time since the last update
@@ -201,10 +204,14 @@ public class Engine {
 	 * @param delta time between last update
 	 */
 	private void update(long delta){
+		if(EXIT_ON_CLOSE)
+			if(window.isCloseRequested())
+				exit();
+		
 		//update the scene
 		scene.update(delta);
 		//update the game
-		Interface.update(delta);
+		_interface.update(delta);
 	}
 	
 	/** Render everything based on the tiem since the last frame
@@ -221,7 +228,7 @@ public class Engine {
 		
 		//render the frame
 		scene.render(delta);
-		Interface.render(delta);
+		_interface.render(delta);
 		
 		//show new frame
 		window.swapBuffers();
@@ -236,18 +243,18 @@ public class Engine {
 		
 		if(autoSavePreferences){
 			//update the game preferences with the window attributes
-			Preferences.width = window.getWidth();
-			Preferences.height = window.getHeight();
+			preferences.width = window.getWidth();
+			preferences.height = window.getHeight();
 			
-			Preferences.x = window.getX();
-			Preferences.y = window.getY();
+			preferences.x = window.getX();
+			preferences.y = window.getY();
 			
 			//save the updated game preferences 
-			Preferences.save();
+			preferences.save();
 		}
 		
 		//end the game instance
-		Interface.end();
+		_interface.end();
 		
 		//destroy the scene assets
 		scene.destroy(true);
@@ -260,10 +267,12 @@ public class Engine {
 		//exit the window
 		window.destroy();
 		
-		Mixer.destroy();
+		//exit out of the mixer's instance
+		mixer.exit();
 		
 		//terminate glfw
 		Window.exit();
+		
 		//exit java
 		System.exit(0);
 	}
@@ -290,7 +299,7 @@ public class Engine {
 	 * @return the default game preferences set
 	 */
 	public Preferences getPreferences(){
-		return Preferences;
+		return preferences;
 	}
 	
 	

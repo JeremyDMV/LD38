@@ -5,14 +5,8 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWCharCallback;
-import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWImage;
-import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.glfw.GLFWWindowPosCallback;
-import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBImage;
@@ -37,13 +31,7 @@ public class Window {
 	private int width, height;
 	private int x = -1, y = -1;
 	
-	/* CALLBACKS */
-	private GLFWWindowSizeCallback  resizeCallback;
-	private GLFWCursorPosCallback   cursorCallback;
-	private GLFWWindowPosCallback   posCallback;
-	private GLFWMouseButtonCallback mouseCallback;
-	private GLFWKeyCallback         keyCallback;
-	private GLFWCharCallback        charCallback;
+	private boolean closeRequested = false;
 	
 	private float cr, cg, cb;
 	
@@ -115,12 +103,12 @@ public class Window {
 		
 		handle = GLFW.glfwCreateWindow(width, height, title, 0L, 0L);
 		
-		posCallback = GLFW.glfwSetWindowPosCallback(handle, (handle, x, y )->{
+		GLFW.glfwSetWindowPosCallback(handle, (handle, x, y )->{
 			this.x = x;
 			this.y = y;
 		});
 		
-		resizeCallback = GLFW.glfwSetWindowSizeCallback(handle, (handle, width, height) -> {
+		GLFW.glfwSetWindowSizeCallback(handle, (handle, width, height) -> {
 			if(this.height != height || this.width != width){
 				this.width = width;
 				this.height = height;
@@ -128,21 +116,25 @@ public class Window {
 			}
 		});
 		
-		mouseCallback = GLFW.glfwSetMouseButtonCallback(handle, (handle, button, action, mods) -> {
+		GLFW.glfwSetMouseButtonCallback(handle, (handle, button, action, mods) -> {
 			Mouse.setButton(button, (action == GLFW.GLFW_PRESS) ? true :
 				(action == GLFW.GLFW_REPEAT) ? true : false);
 		});
 		
-		cursorCallback = GLFW.glfwSetCursorPosCallback(handle, (handle, x, y) -> {
+		GLFW.glfwSetCursorPosCallback(handle, (handle, x, y) -> {
 			Mouse.setPos(x, y);
 		});
 		
-		charCallback = GLFW.glfwSetCharCallback(handle, (handle, keyChar) -> {
+		GLFW.glfwSetCharCallback(handle, (handle, keyChar) -> {
 			Keyboard.addChar((char)keyChar);
 		});
 		
-		keyCallback = GLFW.glfwSetKeyCallback(handle, (handle, key, scancode, action, mods) -> {
+		GLFW.glfwSetKeyCallback(handle, (handle, key, scancode, action, mods) -> {
 			Keyboard.setKey(key, (action == GLFW.GLFW_PRESS) ? true : (action == GLFW.GLFW_REPEAT) ? true : false);
+		});
+		
+		GLFW.glfwSetWindowCloseCallback(handle, (handle) -> {
+			closeRequested = true;
 		});
 			
 		setHint(GLFW.GLFW_SAMPLES, 0);
@@ -185,12 +177,16 @@ public class Window {
 		resumeRender();
 	}
 	
+	public boolean isCloseRequested(){
+		return closeRequested;
+	}
+	
 	private void resized(){
 		GL11.glViewport(0, 0, width, height);
 	}
 	
 	public void center(){
-		GLFWVidMode mon = GLFW.glfwGetVideoMode(0L);
+		GLFWVidMode mon = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 		setPosition((mon.width() - width) / 2, (mon.height() - height) / 2);
 	}
 	
@@ -204,14 +200,6 @@ public class Window {
 	}
 	
 	public void destroy(){
-		//free all of the callbacks
-		resizeCallback.free();
-		cursorCallback.free();
-		posCallback.free();
-		mouseCallback.free();
-		keyCallback.free();
-		charCallback.free();
-		
 		GLFW.glfwDestroyWindow(handle);
 	}
 	
@@ -298,5 +286,10 @@ public class Window {
 	
 	public static void setInputMode(int mode, int value){
 		GLFW.glfwSetInputMode(instance.handle, mode, value);
+	}
+	
+	//terminate the GLFW instance
+	public static void exit(){
+		GLFW.glfwTerminate();
 	}
 }

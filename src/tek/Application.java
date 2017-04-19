@@ -11,6 +11,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import tek.game.Game;
+import tek.game.Preferences;
+
 public class Application {
 	public static final boolean DEBUG = true;
 	public static final boolean DEBUG_INPUT = true;
@@ -105,7 +108,7 @@ public class Application {
 		
 		/* INITIALIZE PROPER GAME ENGINE */
 		
-		//new Engine(new Game());
+		new Engine(new Game(), Preferences.getPrefs());
 		
 		/* SYSTEM EXITING */
 		

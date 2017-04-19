@@ -205,6 +205,15 @@ public class Shader {
 		}
 	}
 	
+	/**Set a boolean value on the shader
+	 * 
+	 * @param uniform name of the uniform
+	 * @param value the value of the boolean
+	 */
+	public void set(String uniform, boolean value){
+		GL20.glUniform1i(getUniform(uniform), value ? 1 : 0);
+	}
+	
 	/** Get the location of a uniform by name
 	 * 
 	 * @param uniform name of a uniform

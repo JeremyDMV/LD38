@@ -1,17 +1,110 @@
 package tek.runtime;
 
-import tek.render.Quad;
+import java.util.Arrays;
 
-public class GameObject {
-	public static Quad quad;
+import tek.render.Animation;
+import tek.render.Quad;
+import tek.render.Shader;
+import tek.render.Texture;
+
+public abstract class GameObject {
+	public static Quad quad = new Quad(1f, 1f);
+	
+	public Shader shader = Scene.current.defaultShader;
+	
+	public String[] tags;
 	
 	public Transform transform;
 	
+	public Texture texture;
+	public int subTexture = -1;
+	
+	public int currentAnimation = -1;
+	public Animation[] animations;
+	
+	{
+		transform = new Transform();
+	}
+	
 	public GameObject(){
+	}
+	
+	public GameObject(GameObject gameObject){
+		this.shader = gameObject.shader;
+		this.transform = new Transform(gameObject.transform);
 		
+		this.tags = Arrays.copyOf(gameObject.tags, gameObject.tags.length);
+		
+		this.texture = gameObject.texture;
+		this.subTexture = gameObject.subTexture;
+		
+		this.animations = gameObject.animations;
+		this.currentAnimation = gameObject.currentAnimation;
+	}
+	
+	public void update(long delta){
+		if(currentAnimation != -1){
+			animations[currentAnimation].update((float)delta);
+			subTexture = animations[currentAnimation].getFrame();
+		}
+		Update(delta);
+	}
+	
+	public abstract void Update(long delta);
+	
+	public void playAnimation(){
+		animations[currentAnimation].play();
+		animations[currentAnimation].setLoop(false);
+	}
+	
+	public void stopAnimation(){
+		if(currentAnimation != -1){
+			animations[currentAnimation].stop();
+		}
+	}
+	
+	
+	public void addAnimation(Animation anim){
+		if(animations == null){
+			animations = new Animation[1];
+			animations[0] = anim;
+		}else{
+			animations = Arrays.copyOf(animations, animations.length + 1);
+			animations[animations.length - 1] = anim;
+		}
+	}
+	
+	public void setAnimation(int animation){
+		if(currentAnimation == animation)
+			return;
+		
+		currentAnimation = animation;
+		
+		if(this.texture != animations[animation].getSource().texture)
+			this.texture = animations[animation].getSource().texture;
 	}
 	
 	public void destroy(){
 		quad.destroy();
+	}
+	
+	public void addTag(String tag){
+		if(tags == null){
+			tags = new String[1];
+			tags[0] = tag;
+		}else{
+			tags = Arrays.copyOf(tags, tags.length + 1);
+			tags[tags.length - 1] = tag;
+		}
+	}
+	
+	public boolean hasTag(String tag){
+		if(tags == null)
+			return false;
+		for(String _tag : tags){
+			if(_tag.equals(tag))
+				return true;
+		}
+		return false;
 	}
 }
