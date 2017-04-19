@@ -2,14 +2,33 @@ package tek;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
 
 public class ResourceLoader {
+	public static  void writeString(String path, String str){
+		//ensure that the file exists
+		if(!exists(path)){
+			new File(path).mkdirs();
+		}
+		
+		//write the file
+		try {
+			OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(path), "UTF-8");
+			out.write(str);
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static boolean exists(String path){
 		return getStream(path) != null;
 	}

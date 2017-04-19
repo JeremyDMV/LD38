@@ -35,7 +35,7 @@ public class Window {
 	
 	private String title;
 	private int width, height;
-	private int x, y;
+	private int x = -1, y = -1;
 	
 	/* CALLBACKS */
 	private GLFWWindowSizeCallback  resizeCallback;
@@ -61,6 +61,16 @@ public class Window {
 	}
 	
 	public Window(int width, int height, String title){
+		this.width = width;
+		this.height = height;
+		this.title = title;
+		
+		instance = this;
+	}
+	
+	public Window(int x, int y, int width, int height, String title){
+		this.x = x;
+		this.y = y;
 		this.width = width;
 		this.height = height;
 		this.title = title;
@@ -164,7 +174,10 @@ public class Window {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 		
-		center();
+		if(x == -1 && y == -1)
+			center();
+		else
+			setPosition(x, y);
 		
 		setClearColor(0.3f, 0.3f, 0.3f);
 		
@@ -232,6 +245,14 @@ public class Window {
 	
 	public int getHeight(){
 		return height;
+	}
+	
+	public int getX(){
+		return x;
+	}
+	
+	public int getY(){
+		return y;
 	}
 	
 	public static boolean canRender(){

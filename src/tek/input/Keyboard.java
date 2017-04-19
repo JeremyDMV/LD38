@@ -155,6 +155,16 @@ public class Keyboard {
 	
 	private Keyboard(){	}
 	
+	public static void destroy(){
+		events.clear();
+		eventsThisFrame.clear();
+		eventsLastFrame.clear();
+		buttons.clear();
+		trackers.clear();
+		chars.clear();
+		nextChars.clear();
+	}		
+	
 	public static void update(long delta){
 		eventsLastFrame.clear();
 		eventsLastFrame.addAll(eventsThisFrame);

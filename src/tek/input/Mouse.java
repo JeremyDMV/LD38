@@ -34,6 +34,12 @@ public class Mouse {
 		thisFrame = new ArrayList<Integer>();
 	}
 	
+	public static void destroy(){
+		events.clear();
+		lastFrame.clear();
+		thisFrame.clear();
+	}
+	
 	public static void update(){
 		lastFrame.clear();
 		lastFrame.addAll(thisFrame);
