@@ -30,9 +30,7 @@ public class Game implements Interface {
 	@Override
 	public void start() {
 		loadLevel(new TestLevel());
-	}
-	/**
-	 * 	Mixer.instance.createChannel("music");
+		Mixer.instance.createChannel("music");
 		Mixer.instance.createChannel("sfx");
 		
 		music = new Music("audio/bg.ogg");
@@ -42,7 +40,7 @@ public class Game implements Interface {
 		music.setLoop(true);
 		//music.play();
 		
-		Shader shader = new Shader("default", "shaders/default.vs", "shaders/default.fs");
+		Shader shader = Shader.get("default");
 		Scene.current.defaultShader = shader;
 		
 		Shader pshader = new Shader("particle", "shaders/particle.vs", "shaders/particle.fs");
@@ -79,7 +77,8 @@ public class Game implements Interface {
 		psystem.emitRate = 100;
 		
 		Scene.current.add(psystem);
-	 */
+
+	}
 
 	@Override
 	public void end() {

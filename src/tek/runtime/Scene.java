@@ -3,6 +3,8 @@ package tek.runtime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.World;
 import org.joml.Vector3f;
 
 import tek.render.Camera;
@@ -20,6 +22,10 @@ public class Scene {
 	public ArrayList<GameObject> gameObjects;
 	public HashMap<Shader, ArrayList<GameObject>> renderables; 
 	
+	//public UIScene uiScene;
+	
+	public World world;
+	
 	public ArrayList<ParticleSystem> particleSystems;
 	
 	{
@@ -29,9 +35,12 @@ public class Scene {
 		renderables = new HashMap<Shader, ArrayList<GameObject>>();
 		
 		particleSystems = new ArrayList<ParticleSystem>();
+		
+		world = new World(new Vec2(100f, 100f));
 	}
 	
 	public Scene(){
+		
 	}
 	
 	public void makeCurrent(){

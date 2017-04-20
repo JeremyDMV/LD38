@@ -1,6 +1,7 @@
 package tek.game.levels;
 
 import tek.game.Level;
+import tek.runtime.Scene;
 
 public class TestLevel extends Level{
 
