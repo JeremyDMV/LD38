@@ -98,4 +98,12 @@ public class Texture {
 		Texture t = (Texture)o;
 		return t.id == id;
 	}
+	
+	public static Texture get(String path){
+		for(Texture texture : textures){
+			if(texture.path.equals(path))
+				return texture;
+		}
+		return new Texture(path);
+	}
 }

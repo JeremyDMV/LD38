@@ -151,6 +151,7 @@ public class Scene {
 		psystem.shader.bind();
 		psystem.shader.set("projection", camera.getProjection());
 		psystem.shader.set("view", camera.getView());
+		psystem.shader.set("model", psystem.transform.mat);
 		
 		psystem.shader.set("particleZ", psystem.transform.layer * Transform.LAYER_MOD);
 		

@@ -13,6 +13,7 @@ import static org.lwjgl.stb.STBVorbis.stb_vorbis_stream_length_in_seconds;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
@@ -21,6 +22,12 @@ import org.lwjgl.stb.STBVorbisInfo;
 import tek.ResourceLoader;
 
 public class Music {
+	public static ArrayList<Music> musics;
+	
+	static{
+		musics = new ArrayList<Music>();
+	}
+	
 	final String path;
 	final Decoder decoder;
 	final IntBuffer buffers;
@@ -42,6 +49,8 @@ public class Music {
 		
 		source = AL10.alGenSources();
 		AL10.alGenBuffers(buffers);
+		
+		musics.add(this);
 	}
 	
 	public void pause(){
@@ -296,5 +305,14 @@ public class Music {
 		public boolean isDead(){
 			return dead;
 		}
+	}
+	
+	public static Music get(String path){
+		String lwr = path.toLowerCase();
+		for(Music music : musics){
+			if(music.path.toLowerCase().equals(lwr))
+				return music;
+		}
+		return null;
 	}
 }

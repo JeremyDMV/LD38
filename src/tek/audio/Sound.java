@@ -5,6 +5,7 @@ import static org.lwjgl.openal.AL10.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
@@ -22,6 +23,12 @@ import static org.lwjgl.stb.STBVorbis.*;
 
 public class Sound {
 	public static final int MAX_SOURCES = 6;
+
+	public static ArrayList<Sound> sounds;
+	
+	static{
+		sounds = new ArrayList<Sound>();
+	}
 	
 	public final int id;
 	public final String path;
@@ -51,6 +58,8 @@ public class Sound {
 			id = -1;
 		
 		allocate();
+		
+		sounds.add(this);
 	}
 	
 	private void allocate(){
@@ -119,6 +128,15 @@ public class Sound {
 	public enum SoundType {
 		SFX,
 		ENVIRONMENTAL;
+	}
+	
+	public static Sound get(String path){
+		String lwr = path.toLowerCase();
+		for(Sound sound : sounds){
+			if(sound.path.toLowerCase().equals(lwr))
+				return sound;
+		}
+		return null;
 	}
 	
 }

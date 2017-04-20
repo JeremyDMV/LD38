@@ -501,6 +501,27 @@ public class Shader {
 		return aliases.substring(0, aliases.length() -1);
 	}
 	
+	public static boolean exists(String name){
+		String lowercase = name.toLowerCase();
+		for(Shader shader : shaders.values()){
+			if(shader.getName().toLowerCase().equals(lowercase)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean exists(String vertex, String fragment){
+		String lwrV = vertex.toLowerCase();
+		String lwrF = fragment.toLowerCase();
+		for(Shader shader : shaders.values()){
+			if(shader.fragment.toLowerCase().equals(lwrF)
+					&& shader.vertex.toLowerCase().equals(lwrV))
+				return true;
+		}
+		return false;
+	}
+	
 	public static HashMap<String, Shader> getMap(){
 		return shaders;
 	}

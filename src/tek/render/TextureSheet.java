@@ -107,4 +107,14 @@ public class TextureSheet {
 		}
 		return null;
 	}
+	
+	public static TextureSheet getSheetByPath(String filePath){
+		String lowercase = filePath.toLowerCase();
+		for(TextureSheet sheet: sheets){
+			if(sheet.texture.path.toLowerCase().equals(lowercase)){
+				return sheet;
+			}
+		}
+		return null;
+	}
 }

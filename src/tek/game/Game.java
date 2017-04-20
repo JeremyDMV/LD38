@@ -3,6 +3,7 @@ package tek.game;
 import tek.Window;
 import tek.audio.Mixer;
 import tek.audio.Music;
+import tek.game.levels.TestLevel;
 import tek.input.Keyboard;
 import tek.render.Animation;
 import tek.render.Shader;
@@ -16,9 +17,22 @@ public class Game implements Interface {
 	Music music;
 	ParticleSystem psystem;
 	
+	public Level level;
+	
+	public void loadLevel(Level level){
+		if(this.level != null)
+			level.end();
+		
+		this.level = level;
+		level.start();
+	}
+	
 	@Override
 	public void start() {
-		Mixer.instance.createChannel("music");
+		loadLevel(new TestLevel());
+	}
+	/**
+	 * 	Mixer.instance.createChannel("music");
 		Mixer.instance.createChannel("sfx");
 		
 		music = new Music("audio/bg.ogg");
@@ -56,13 +70,16 @@ public class Game implements Interface {
 		Scene.current.add(gameObject);
 		
 		psystem = new ParticleSystem();
+		psystem.transform.setPosition(3f, 3f);
+		psystem.transform.setSize(1f,1f);
+		
 		psystem.shader = pshader;
 		psystem.emitLife = 2;
 		psystem.particleLife = 1000f; //1 second 
 		psystem.emitRate = 100;
 		
 		Scene.current.add(psystem);
-	}
+	 */
 
 	@Override
 	public void end() {
@@ -75,7 +92,7 @@ public class Game implements Interface {
 			System.out.println(psystem.particles.size());
 		
 		if(Keyboard.isClicked('p'))
-			psystem.emit();
+			music.play();
 	}
 
 	@Override
