@@ -9,8 +9,7 @@ import tek.render.Animation;
 import tek.render.Quad;
 import tek.render.Shader;
 import tek.render.Texture;
-import tek.runtime.Physics.PhysicsBody;
-import tek.runtime.Physics.TBodyType;
+import tek.runtime.physics.Collider;
 
 public abstract class GameObject {
 	public static Quad quad = new Quad(1f, 1f);
@@ -33,7 +32,8 @@ public abstract class GameObject {
 	public Source source;
 	
 	//physics
-	public PhysicsBody physicsBody;
+	public Collider collider;
+	
 	
 	{
 		transform = new Transform(this);
@@ -58,14 +58,11 @@ public abstract class GameObject {
 		Start();
 	}
 	
-	public void setupPhysics(TBodyType type){
-		physicsBody = new PhysicsBody(transform);
-		physicsBody.setBodyType(type);
-	}
-	
-	public void setupPhysics(TBodyType type, Vector2f overrideSize){
-		physicsBody = new PhysicsBody(transform, overrideSize);
-		physicsBody.setBodyType(type);
+	public void setCollider(Collider collider){
+		if(this.collider == collider)
+			return;
+		this.collider = collider;
+		Physics.instance.colliders.add(collider);
 	}
 	
 	public void update(long delta){

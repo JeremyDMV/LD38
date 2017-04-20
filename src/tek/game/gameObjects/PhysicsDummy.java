@@ -4,14 +4,13 @@ import org.joml.Vector2f;
 
 import tek.render.TextureSheet;
 import tek.runtime.GameObject;
-import tek.runtime.Physics.PhysicsBody;
-import tek.runtime.Physics.PhysicsCallback;
-import tek.runtime.Physics.PhysicsResponse;
-import tek.runtime.Physics.TBodyType;
+import tek.runtime.Physics.CollisionCallback;
+import tek.runtime.physics.Collider;
 
 public class PhysicsDummy extends GameObject {
 	
 	{
+		
 	}
 	
 	public PhysicsDummy(){
@@ -21,9 +20,6 @@ public class PhysicsDummy extends GameObject {
 		subTexture = 3;
 		transform.setSize(10f, 10f);
 		transform.setPosition(1f, 1f);
-		
-		this.setupPhysics(TBodyType.DYNAMIC);
-		physicsBody.callback = new CollisionCallback(physicsBody);
 	}
 	
 	public PhysicsDummy(Vector2f overrideSize){
@@ -34,9 +30,17 @@ public class PhysicsDummy extends GameObject {
 		transform.setSize(10f, 10f);
 		transform.setPosition(1f, 1f);
 		
-		
-		this.setupPhysics(TBodyType.DYNAMIC, overrideSize);
-		physicsBody.callback = new CollisionCallback(physicsBody);
+		collider.setCallback(new CollisionCallback(){
+			@Override
+			public void onCollisionEnter(Collider collider) {
+				System.out.println("OW");
+			}
+
+			@Override
+			public void onCollisionExit(Collider collider) {
+				System.out.println("FINALLY");
+			}
+		});
 	}
 	
 	@Override
@@ -48,22 +52,4 @@ public class PhysicsDummy extends GameObject {
 	public void Update(long delta) {
 		
 	}
-	
-	
-	public class CollisionCallback extends PhysicsCallback {
-		
-		public CollisionCallback(PhysicsBody body) {
-			super(body);
-		}
-
-		@Override
-		public void onCollisionEnter(PhysicsResponse response) {
-			System.out.println("COLLISION");
-		}
-
-		@Override
-		public void onCollisionExit(PhysicsResponse response) {
-			System.out.println("Collision left");
-		}
-	};
 }

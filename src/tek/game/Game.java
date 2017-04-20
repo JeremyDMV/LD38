@@ -16,7 +16,8 @@ import tek.render.TextureSheet;
 import tek.runtime.GameObject;
 import tek.runtime.ParticleSystem;
 import tek.runtime.Scene;
-import tek.runtime.Physics.TBodyType;
+import tek.runtime.physics.BoxCollider;
+import tek.runtime.physics.Collider.ColliderType;
 
 public class Game implements Interface {
 	
@@ -78,12 +79,14 @@ public class Game implements Interface {
 		dummy.transform.setPosition(20f, 40f);
 		dummy.transform.setSize(10f, 10f);
 		
+		dummy.setCollider(new BoxCollider(dummy, dummy.transform.getSize()));
+		
 		Scene.current.add(dummy);
 		
 		dummy2 = new PhysicsDummy();
 		dummy2.subTexture = 14;
 		dummy2.transform.setPosition(5f, 1f);
-		dummy2.physicsBody.setBodyType(TBodyType.STATIC);
+		dummy2.setCollider(new BoxCollider(dummy2, dummy2.transform.getSize()));
 		
 		Scene.current.add(dummy2);
 		
@@ -98,12 +101,12 @@ public class Game implements Interface {
 		
 		Scene.current.add(psystem);
 		
-		LevelBound ground = new LevelBound();
-		ground.transform.setPosition(10f, 0);
-		ground.transform.setSize(new Vector2f(100f, 1f));
-		ground.setupPhysics(TBodyType.STATIC);
+		LevelBound bounds = new LevelBound();
+		bounds.transform.setPosition(0f, 0f);
+		bounds.setCollider(new BoxCollider(bounds, new Vector2f(100f, 1f), ColliderType.STATIC));
 		
-		Scene.current.add(ground);
+		
+		Scene.current.add(bounds);
 	}
 
 	@Override
@@ -114,8 +117,8 @@ public class Game implements Interface {
 	@Override
 	public void input(long delta) {
 		if(Keyboard.isClicked('c')){
-			System.out.println(dummy2.physicsBody.body.getPosition());
-			System.out.println(dummy2.transform.getPosition().x + "," + dummy2.transform.getPosition().y);
+			System.out.println(dummy.collider.body.getPosition());
+			System.out.println(dummy.transform.getPosition().x + "," + dummy.transform.getPosition().y);
 			dummy.transform.updateMatrix();
 		}
 		
@@ -123,7 +126,7 @@ public class Game implements Interface {
 			music.play();
 		
 		if(Keyboard.isDown('v')){
-			dummy.transform.move(1f * (delta / 1000f), 0f);
+			dummy.collider.applyLinearImpulse(new Vector2f(10f, 0f), new Vector2f(0f, 0f));
 		}else{
 			
 		}

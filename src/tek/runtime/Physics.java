@@ -31,27 +31,41 @@ public class Physics {
 	
 	{
 		colliders = new ArrayList<Collider>();
-		gravity = new Vector2f();
-		
-		//setup the callback trackers
-		setTracker(new ContactTracker(this));
+		gravity = new Vector2f(0, -9.8f);
 	}
 	
 	public Physics(){
-		world = new World(new Vec2(0, -10f));
+		world = new World(new Vec2(gravity.x, gravity.y));
+		
+		//setup the callback trackers
+		setTracker(new ContactTracker(this));
+		
 		instance = this;
 	}
 	
 	public Physics(Vector2f gravity){
 		this.gravity.set(gravity);
 		world = new World(new Vec2(gravity.x, gravity.y));
+		
+		//setup the callback trackers
+		setTracker(new ContactTracker(this));
+		
 		instance = this;
 	}
 	
+	public void prep(){
+		for(Collider collider : colliders)
+			collider.prep();
+	}
 	
 	public void update(long delta){
 		double adjusted = delta / 1000d;
 		world.step((float)(adjusted), 5, 2);
+	}
+	
+	public void step(){
+		for(Collider collider : colliders)
+			collider.step();
 	}
 	
 	public void setGravity(float x, float y){
@@ -128,8 +142,13 @@ public class Physics {
 					cb = c;
 			}
 			
-			ca.getCallback().onCollisionEnter(cb);
-			cb.getCallback().onCollisionEnter(ca);
+			if(ca != null)
+				if(ca.getCallback() != null)
+					ca.getCallback().onCollisionEnter(cb);
+			
+			if(cb != null)
+				if(cb.getCallback() != null)
+					cb.getCallback().onCollisionEnter(ca);
 		}
 
 		@Override
@@ -147,8 +166,13 @@ public class Physics {
 					cb = c;
 			}
 			
-			ca.getCallback().onCollisionExit(cb);
-			cb.getCallback().onCollisionExit(ca);
+			if(ca != null)
+				if(ca.getCallback() != null)
+					ca.getCallback().onCollisionExit(cb);
+			
+			if(cb != null)
+				if(cb.getCallback() != null)
+					cb.getCallback().onCollisionExit(ca);
 		}
 
 		@Override

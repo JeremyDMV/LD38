@@ -7,7 +7,6 @@ import tek.render.Camera;
 import tek.render.Shader;
 import tek.render.TextureSheet;
 import tek.runtime.ParticleSystem.Particle;
-import tek.runtime.Physics.PhysicsBody;
 
 public class Scene {
 	public static Scene current = null;
@@ -102,19 +101,15 @@ public class Scene {
 			system.update(delta);
 		}
 		
-		//prepare the physics world for anything that has moved
-		for(PhysicsBody body : physics.bodies){
-			body.checkUpdate();
-		}
+		//check for updates and fix any world positioning
+		physics.prep();
 		
 		//update the physics world
 		physics.update(delta);
 		
-		//update the transforms to realistically move with
+		//update the transforms to move with
 		//their physical representations
-		for(PhysicsBody body : physics.bodies){
-			body.postStep();
-		}
+		physics.step();
 	}
 		
 	public void render(long delta){

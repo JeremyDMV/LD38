@@ -117,7 +117,7 @@ public class Transform {
 		return new Vector2f(position);
 	}
 	
-	public Vector2f getsize(){
+	public Vector2f getSize(){
 		return new Vector2f(size);
 	}
 	
