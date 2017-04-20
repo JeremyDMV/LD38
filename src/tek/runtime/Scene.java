@@ -115,7 +115,6 @@ public class Scene {
 		for(PhysicsBody body : physics.bodies){
 			body.postStep();
 		}
-		
 	}
 		
 	public void render(long delta){

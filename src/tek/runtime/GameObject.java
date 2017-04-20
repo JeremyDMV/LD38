@@ -2,12 +2,15 @@ package tek.runtime;
 
 import java.util.Arrays;
 
+import org.joml.Vector2f;
+
 import tek.audio.Source;
 import tek.render.Animation;
 import tek.render.Quad;
 import tek.render.Shader;
 import tek.render.Texture;
 import tek.runtime.Physics.PhysicsBody;
+import tek.runtime.Physics.TBodyType;
 
 public abstract class GameObject {
 	public static Quad quad = new Quad(1f, 1f);
@@ -30,7 +33,7 @@ public abstract class GameObject {
 	public Source source;
 	
 	//physics
-	PhysicsBody physicsBody;
+	public PhysicsBody physicsBody;
 	
 	{
 		transform = new Transform(this);
@@ -53,6 +56,16 @@ public abstract class GameObject {
 		this.currentAnimation = gameObject.currentAnimation;
 		
 		Start();
+	}
+	
+	public void setupPhysics(TBodyType type){
+		physicsBody = new PhysicsBody(transform);
+		physicsBody.setBodyType(type);
+	}
+	
+	public void setupPhysics(TBodyType type, Vector2f overrideSize){
+		physicsBody = new PhysicsBody(transform, overrideSize);
+		physicsBody.setBodyType(type);
 	}
 	
 	public void update(long delta){

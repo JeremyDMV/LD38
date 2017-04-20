@@ -101,6 +101,11 @@ public class Camera {
 		updateView();
 	}
 	
+	public void setPosition(float x, float y, float z){
+		this.position.set(x, y, z);
+		updateView();
+	}
+	
 	/** Get the camera's center position
 	 *
 	 * @return the camera's position

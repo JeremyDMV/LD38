@@ -1,21 +1,28 @@
 package tek.game; 
 
+import org.joml.Vector2f;
+
 import tek.Window;
 import tek.audio.Mixer;
 import tek.audio.Music;
+import tek.game.gameObjects.LevelBound;
+import tek.game.gameObjects.PhysicsDummy;
 import tek.game.levels.TestLevel;
 import tek.input.Keyboard;
 import tek.render.Animation;
 import tek.render.Shader;
 import tek.render.Texture;
 import tek.render.TextureSheet;
+import tek.runtime.GameObject;
 import tek.runtime.ParticleSystem;
 import tek.runtime.Scene;
+import tek.runtime.Physics.TBodyType;
 
 public class Game implements Interface {
 	
 	Music music;
 	ParticleSystem psystem;
+	PhysicsDummy dummy, dummy2;
 	
 	public Level level;
 	
@@ -67,6 +74,19 @@ public class Game implements Interface {
 		
 		Scene.current.add(gameObject);
 		
+		dummy = new PhysicsDummy();
+		dummy.transform.setPosition(20f, 40f);
+		dummy.transform.setSize(10f, 10f);
+		
+		Scene.current.add(dummy);
+		
+		dummy2 = new PhysicsDummy();
+		dummy2.subTexture = 14;
+		dummy2.transform.setPosition(5f, 1f);
+		dummy2.physicsBody.setBodyType(TBodyType.STATIC);
+		
+		Scene.current.add(dummy2);
+		
 		psystem = new ParticleSystem();
 		psystem.transform.setPosition(3f, 3f);
 		psystem.transform.setSize(1f,1f);
@@ -77,7 +97,13 @@ public class Game implements Interface {
 		psystem.emitRate = 100;
 		
 		Scene.current.add(psystem);
-
+		
+		LevelBound ground = new LevelBound();
+		ground.transform.setPosition(10f, 0);
+		ground.transform.setSize(new Vector2f(100f, 1f));
+		ground.setupPhysics(TBodyType.STATIC);
+		
+		Scene.current.add(ground);
 	}
 
 	@Override
@@ -87,11 +113,20 @@ public class Game implements Interface {
 
 	@Override
 	public void input(long delta) {
-		if(Keyboard.isClicked('c'))
-			System.out.println(psystem.particles.size());
+		if(Keyboard.isClicked('c')){
+			System.out.println(dummy2.physicsBody.body.getPosition());
+			System.out.println(dummy2.transform.getPosition().x + "," + dummy2.transform.getPosition().y);
+			dummy.transform.updateMatrix();
+		}
 		
 		if(Keyboard.isClicked('p'))
 			music.play();
+		
+		if(Keyboard.isDown('v')){
+			dummy.transform.move(1f * (delta / 1000f), 0f);
+		}else{
+			
+		}
 	}
 
 	@Override

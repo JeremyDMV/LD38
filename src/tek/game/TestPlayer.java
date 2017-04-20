@@ -1,20 +1,26 @@
 package tek.game;
 
+import org.joml.Vector2f;
+
 import tek.audio.Listener;
 import tek.audio.Mixer;
 import tek.audio.Source;
 import tek.input.Keyboard;
+import tek.render.Camera;
 import tek.runtime.GameObject;
+import tek.runtime.Scene;
 
 public class TestPlayer extends GameObject {
 	public float movespeed = 6f;
 	
 	public Listener listener;
+	public Camera camera;
 	
 	@Override
 	public void Start(){
 		source = new Source();
 		listener = Mixer.instance.listener;
+		camera = Scene.current.camera;
 	}
 	
 	@Override
@@ -41,6 +47,9 @@ public class TestPlayer extends GameObject {
 		if(Keyboard.isClicked(Keyboard.KEY_SPACE)){
 			playAnimation();
 		}
+		
+		Vector2f pos = transform.getPosition();
+		camera.setPosition(pos.x - 5, pos.y - 10, 0);
 		
 		transform.move((float)(mx * movespeed * adjustedDelta),(float)(my * movespeed * adjustedDelta));
 	}

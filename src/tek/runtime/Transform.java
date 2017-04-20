@@ -70,9 +70,9 @@ public class Transform {
 	
 	public void updateMatrix(){
 		mat.identity();
-		mat.scale(size.x, size.y, 1f);
 		mat.translate(position.x, position.y, layer * LAYER_MOD);
 		mat.rotateZ((float)Math.toRadians(rotation));
+		mat.scale(size.x, size.y, 1f);
 		updateNeeded = false;
 	}
 	
