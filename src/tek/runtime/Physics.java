@@ -1,12 +1,19 @@
 package tek.runtime;
 
+import java.util.ArrayList;
+
+import org.jbox2d.callbacks.ContactImpulse;
+import org.jbox2d.callbacks.ContactListener;
+import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.contacts.Contact;
 import org.joml.Vector2f;
 
 public class Physics {
@@ -15,13 +22,24 @@ public class Physics {
 	public World world;
 	private Vector2f gravity;
 
+	public ArrayList<PhysicsBody> bodies;
+	
 	{
 		gravity = new Vector2f();
+		bodies = new ArrayList<PhysicsBody>();
 	}
 	
 	public Physics(){
 		instance = this;
+		world = new World(new Vec2(0, 0));
 	}
+	
+	public Physics(Vector2f gravity){
+		instance = this;
+		this.gravity.set(gravity);
+		world = new World(new Vec2(gravity.x, gravity.y));
+	}
+	
 	
 	public void update(long delta){
 		world.step((float)delta, 8, 3);
@@ -38,8 +56,20 @@ public class Physics {
 		return new Vector2f(gravity);
 	}
 	
+	public PhysicsBody findBody(Body b){
+		for(PhysicsBody body : bodies){
+			if(body.body == b)
+				return body;
+		}
+		return null;
+	}
+	
+	public void destroy(PhysicsBody body){
+		world.destroyBody(body.body);
+		bodies.remove(body);
+	}
+	
 	public Body getBody(Transform transform, TBodyType type, boolean box, Vector2f size){
-		
 		BodyDef bd = new BodyDef();
 		
 		bd.position.set(transform.position.x, transform.position.y);
@@ -70,30 +100,79 @@ public class Physics {
 		return body;
 	}
 	
+	public abstract class PhysicsCallback implements ContactListener {
+		
+		public abstract void onCollisionEnter(PhysicsResponse response);
+		public abstract void onCollisionExit(PhysicsResponse response);
+		
+		PhysicsBody parent;
+		
+		public PhysicsCallback(PhysicsBody body){
+			parent = body;
+		}
+		
+		@Override
+		public void beginContact(Contact other) {
+			Fixture o = other.getFixtureA();
+			
+			if(parent.hasFixture(o)){
+				o = other.getFixtureB();
+			}
+			
+			Body b = o.m_body;
+			onCollisionEnter(new PhysicsResponse(Physics.instance.findBody(b)));
+		}
+		
+		
+		@Override
+		public void endContact(Contact other) {
+			
+			
+		}
+		@Override
+		public void postSolve(Contact other, ContactImpulse impulse) {
+		}
+		@Override
+		public void preSolve(Contact other, Manifold manifold) {
+		}
+	}
+	
+	public class PhysicsResponse {
+		public final PhysicsBody other;
+		
+		public PhysicsResponse(PhysicsBody other){
+			this.other = other;
+		}
+	}
+	
 	public static class PhysicsBody {
 		public final Transform transform;
-		private Vector2f size, offset;
-		private Vector2f lastPosition, lastSize;
+		private Vector2f size;
+		private Vector2f lastPosition;
 		
 		private float mass = 1f;
 		private TBodyType type = TBodyType.DYNAMIC;
+		
+		private float gravityScale = 1f;
+		
+		public PhysicsCallback callback;
 		
 		private Body body;
 		
 		{
 			size = null;
-			offset = new Vector2f();
 			lastPosition = new Vector2f();
-			lastSize = new Vector2f();
 		}
 		
 		public PhysicsBody(Transform transform){
 			this.transform = transform;
+			body = Physics.instance.getBody(transform, TBodyType.STATIC, true, null);
 		}
 		
 		public PhysicsBody(Transform transform, Vector2f overrideSize){
 			this.transform = transform;
 			size = new Vector2f(overrideSize);
+			body = Physics.instance.getBody(transform, TBodyType.STATIC, true, overrideSize);
 		}
 		
 		public void checkUpdate(){
@@ -101,10 +180,31 @@ public class Physics {
 				body.setTransform(new Vec2(transform.position.x, transform.position.y),
 						(float)Math.toRadians(transform.rotation));
 			}
+		}
+		
+		protected boolean hasFixture(Fixture fixture){
+			Fixture n = body.m_fixtureList;
 			
-			if(lastSize.equals(getSize())){
-				
+			while(n != null){
+				if(n == fixture){
+					return true;
+				}
+				n = n.m_next;
 			}
+			return false;
+		}
+		
+		protected void postStep(){
+			Vec2 bodyPos = body.getPosition();
+			float bodyAngle = body.getAngle();
+			
+			transform.setPosition(bodyPos.x, bodyPos.y);
+			transform.setRotation(bodyAngle);
+		}
+		
+		public void destroy(){
+			Physics.instance.destroy(this);
+			body = null;
 		}
 		
 		public boolean isSizeOverriden(){
@@ -112,7 +212,7 @@ public class Physics {
 		}
 		
 		public Vector2f getPosition(){
-			return transform.getPosition().add(offset);
+			return transform.getPosition();
 		}
 		
 		public void setSize(Vector2f size){
@@ -131,12 +231,42 @@ public class Physics {
 			this.mass = mass;
 		}
 		
+		public void setGravityScale(float gravityScale){
+			body.setGravityScale(gravityScale);
+			this.gravityScale = gravityScale;
+		}
+		
+		public float getGravityScale(){
+			return gravityScale;
+		}
+		
 		public Vector2f getSize(){
 			if(isSizeOverriden()){
 				return new Vector2f(this.size);
 			}else{
 				return new Vector2f(transform.size);
 			}
+		}
+		
+		public void applyForce(Vector2f force){
+			body.applyForceToCenter(new Vec2(force.x, force.y));
+		}
+		
+		public void applyForce(Vector2f force, Vector2f point){
+			body.applyForce(new Vec2(force.x, force.y), new Vec2(point.x, point.y));
+		}
+		
+		public void applyAngularImpulse(float impulse){
+			body.applyAngularImpulse(impulse);
+		}
+		
+		public Vector2f getLinearVelocity(){
+			Vec2 l = body.getLinearVelocity();
+			return new Vector2f(l.x, l.y);
+		}
+		
+		public float getAngularVelocity(){
+			return body.getAngularVelocity();
 		}
 		
 		public TBodyType getType(){

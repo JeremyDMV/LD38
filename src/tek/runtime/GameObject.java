@@ -7,6 +7,7 @@ import tek.render.Animation;
 import tek.render.Quad;
 import tek.render.Shader;
 import tek.render.Texture;
+import tek.runtime.Physics.PhysicsBody;
 
 public abstract class GameObject {
 	public static Quad quad = new Quad(1f, 1f);
@@ -28,8 +29,11 @@ public abstract class GameObject {
 	//sound 
 	public Source source;
 	
+	//physics
+	PhysicsBody physicsBody;
+	
 	{
-		transform = new Transform();
+		transform = new Transform(this);
 	}
 	
 	public GameObject(){
@@ -38,7 +42,7 @@ public abstract class GameObject {
 	
 	public GameObject(GameObject gameObject){
 		this.shader = gameObject.shader;
-		this.transform = new Transform(gameObject.transform);
+		this.transform = new Transform(this, gameObject.transform);
 		
 		this.tags = Arrays.copyOf(gameObject.tags, gameObject.tags.length);
 		
@@ -100,6 +104,27 @@ public abstract class GameObject {
 		
 		if(this.texture != animations[animation].getSource().texture)
 			this.texture = animations[animation].getSource().texture;
+	}
+	
+	public void setAnimation(String animationName){
+		if(animations[currentAnimation].getName().equals(animationName))
+			return;
+		
+		int index = -1;
+		
+		for(int i=0;i<animations.length;i++){
+			if(animations[i].getName().equals(animationName)){
+				index = i;
+				continue;
+			}
+		}
+		
+		//if no match found
+		if(index == -1)
+			return;
+		
+		if(this.texture != animations[index].getSource().texture)
+			this.texture = animations[index].getSource().texture;
 	}
 	
 	public void destroy(){

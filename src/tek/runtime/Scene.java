@@ -3,14 +3,11 @@ package tek.runtime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.World;
-import org.joml.Vector3f;
-
 import tek.render.Camera;
 import tek.render.Shader;
 import tek.render.TextureSheet;
 import tek.runtime.ParticleSystem.Particle;
+import tek.runtime.Physics.PhysicsBody;
 
 public class Scene {
 	public static Scene current = null;
@@ -24,8 +21,7 @@ public class Scene {
 	
 	//public UIScene uiScene;
 	
-	public World world;
-	
+	public Physics physics;
 	public ArrayList<ParticleSystem> particleSystems;
 	
 	{
@@ -36,7 +32,7 @@ public class Scene {
 		
 		particleSystems = new ArrayList<ParticleSystem>();
 		
-		world = new World(new Vec2(100f, 100f));
+		physics = new Physics();
 	}
 	
 	public Scene(){
@@ -105,6 +101,21 @@ public class Scene {
 		for(ParticleSystem system : particleSystems){
 			system.update(delta);
 		}
+		
+		//prepare the physics world for anything that has moved
+		for(PhysicsBody body : physics.bodies){
+			body.checkUpdate();
+		}
+		
+		//update the physics world
+		physics.update(delta);
+		
+		//update the transforms to realistically move with
+		//their physical representations
+		for(PhysicsBody body : physics.bodies){
+			body.postStep();
+		}
+		
 	}
 		
 	public void render(long delta){

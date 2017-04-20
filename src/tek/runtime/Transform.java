@@ -14,6 +14,7 @@ public class Transform {
 	protected float rotation;
 	protected int layer;
 	
+	protected GameObject parent;
 	
 	{
 		mat = new Matrix4f();
@@ -23,23 +24,27 @@ public class Transform {
 		layer    = 0;
 	}
 	
-	public Transform(){
+	public Transform(GameObject parent){
+		this.parent = parent;
 	}
 	
-	public Transform(Vector2f position){
+	public Transform(GameObject parent, Vector2f position){
+		this.parent = parent;
 		this.position.set(position);
 		
 		updateMatrix();
 	}
 	
-	public Transform(Vector2f position, float rotation){
+	public Transform(GameObject parent, Vector2f position, float rotation){
+		this.parent = parent;
 		this.position.set(position);
 		this.rotation = rotation;
 		
 		updateMatrix();
 	}
 	
-	public Transform(Vector2f position, float rotation, Vector2f size){
+	public Transform(GameObject parent, Vector2f position, float rotation, Vector2f size){
+		this.parent = parent;
 		this.position.set(position);
 		this.rotation = rotation;
 		this.size.set(size);
@@ -47,11 +52,16 @@ public class Transform {
 		updateMatrix();
 	}
 	
-	public Transform(Transform t){
+	public Transform(GameObject parent, Transform t){
+		this.parent = parent;
 		this.mat.set(t.mat);
 		this.position.set(t.position);
 		this.size.set(t.size);
 		this.rotation = t.rotation;
+	}
+	
+	public void setParent(GameObject gameObject){
+		this.parent = gameObject;
 	}
 	
 	public boolean isUpdateNeeded(){

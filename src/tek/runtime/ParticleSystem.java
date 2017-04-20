@@ -40,7 +40,7 @@ public class ParticleSystem {
 	private ArrayList<Particle> toRemove;
 
 	{
-		transform = new Transform();
+		transform = new Transform(null);
 		particleVelocity = new Vector2f();
 		seed = new Date().getTime();
 		random = new Random(seed);
