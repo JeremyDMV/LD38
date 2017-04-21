@@ -4,6 +4,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import tek.Window;
+
 public class Camera {
 	public static final Vector2f DEFAULT_SIZE = new Vector2f(160, 90);
 	
@@ -13,6 +15,7 @@ public class Camera {
 	
 	//the camera's attributes in matrix form
 	private Matrix4f view, projection;
+	private Matrix4f ui;
 	
 	public Camera(){
 		position = new Vector3f();
@@ -38,6 +41,14 @@ public class Camera {
 	private void initialize(){
 		updateProjection();
 		updateView();
+		updateUI();
+	}
+	
+	public void updateUI(){
+		if(ui == null)
+			ui = new Matrix4f();
+		ui.identity();
+		ui.ortho(0, Window.instance.getWidth(), 0, Window.instance.getHeight(), 1, -1);
 	}
 	
 	/**
@@ -81,6 +92,10 @@ public class Camera {
 	 */
 	public Matrix4f getProjection(){
 		return projection;
+	}
+	
+	public Matrix4f getUI(){
+		return ui;
 	}
 	
 	/** Set the size of the camera's view

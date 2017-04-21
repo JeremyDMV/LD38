@@ -91,7 +91,7 @@ public class Physics {
 		Body body = world.createBody(def);
 		
 		PolygonShape square = new PolygonShape();
-		square.setAsBox(size.x, size.y);
+		square.setAsBox(size.x / 2f, size.y / 2f);
 		body.createFixture(square, 1.0f);
 		
 		body.setType(type);

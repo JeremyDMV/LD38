@@ -154,6 +154,7 @@ public class Scene {
 		for(ParticleSystem system : particleSystems){
 			render(system);
 		}
+		
 	}
 	
 	public void render(ParticleSystem psystem){
@@ -171,6 +172,7 @@ public class Scene {
 		
 		for(Particle particle : psystem.particles){
 			psystem.shader.set("particlePos", particle.position);
+			
 			//TODO Update the color transitions
 			psystem.shader.set("particleColor", psystem.startColor);
 			

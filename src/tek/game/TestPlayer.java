@@ -49,8 +49,7 @@ public class TestPlayer extends GameObject {
 		}
 		
 		Vector2f pos = transform.getPosition();
-		camera.setPosition(pos.x - 5, pos.y - 10, 0);
 		
-		transform.move((float)(mx * movespeed * adjustedDelta),(float)(my * movespeed * adjustedDelta));
+		//transform.move((float)(mx * movespeed * adjustedDelta),(float)(my * movespeed * adjustedDelta));
 	}
 }

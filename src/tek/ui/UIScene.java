@@ -2,10 +2,15 @@ package tek.ui;
 
 import java.util.ArrayList;
 
+import org.joml.Vector2f;
+
+import tek.Window;
 import tek.input.Keyboard;
 import tek.input.Mouse;
 
 public class UIScene {
+	private Vector2f size;
+	
 	public ArrayList<UITexture> textures;
 	public ArrayList<UIText>    texts;
 	
@@ -17,10 +22,17 @@ public class UIScene {
 		textures = new ArrayList<UITexture>();
 		texts    = new ArrayList<UIText>();
 		clicks   = new ArrayList<ClickType>();
+		
+		size = new Vector2f();
+		resized();
 	}
 	
 	public UIScene(){
 		
+	}
+	
+	public void resized(){
+		size.set(Window.instance.getWidth(), Window.instance.getHeight());
 	}
 	
 	public void input(long delta){
@@ -35,6 +47,14 @@ public class UIScene {
 		for(int i : Mouse.events){
 			clicks.add(new ClickType(true, i));
 		}
+	}
+	
+	public Vector2f flipY(double x, double y){
+		return new Vector2f((float)(x), (float)(size.y - y));
+	}
+	
+	public void render(){
+		
 	}
 	
 	public void update(long delta){
