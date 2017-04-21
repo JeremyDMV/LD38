@@ -20,6 +20,8 @@ import tek.runtime.physics.BoxCollider;
 import tek.runtime.physics.Collider.ColliderType;
 import tek.ui.UIFont;
 import tek.ui.UIScene;
+import tek.ui.UIText;
+import tek.ui.UITexture;
 
 public class Game implements Interface {
 	
@@ -30,8 +32,10 @@ public class Game implements Interface {
 	public Level level;
 	
 	public UIFont test;
-	
 	public UIScene ui;
+	
+	public UITexture texture;
+	public UIText text;
 	
 	
 	public void loadLevel(Level level){
@@ -46,9 +50,16 @@ public class Game implements Interface {
 	public void start() {
 		Keyboard.setupButton("horizontal", Keyboard.KEY_RIGHT, Keyboard.KEY_D, Keyboard.KEY_LEFT, Keyboard.KEY_A);
 		
-		ui = new UIScene();
-		
 		loadLevel(new TestLevel());
+		
+		UIScene.defaultShader = new Shader("ui", "shaders/ui.vs", "shaders/ui.fs");
+		ui = Scene.current.uiScene;
+		
+		
+		test = new UIFont("fonts/test.ttf", 16.0f);
+		
+		UIText.defaultFont = test;
+		
 		Mixer.instance.createChannel("music");
 		Mixer.instance.createChannel("sfx");
 		
@@ -67,11 +78,22 @@ public class Game implements Interface {
 		
 		Window.instance.setIcon("textures/icon16.png", "textures/icon32.png");
 		
-		test = new UIFont("fonts/test.ttf", 16.0f);
-		
 		TextureSheet sheet = new TextureSheet(new Texture("textures/texsheet.png"), 16, 16, "test");
 		TestPlayer gameObject = new TestPlayer();
 		
+		texture = new UITexture(sheet.texture, 16);
+		
+		texture.size.set(100, 100);
+		texture.position.set(100,100);
+		
+		texture.updateMatrix();
+		
+		text = new UIText("hello world");
+		text.position.set(10f, 10f);
+		
+		ui.textures.add(texture);
+		ui.texts.add(text);
+
 		gameObject.texture = sheet.texture;
 		gameObject.subTexture = 120;
 		gameObject.transform.setSize(10f, 10f);
@@ -132,9 +154,8 @@ public class Game implements Interface {
 	@Override
 	public void input(long delta) {
 		if(Keyboard.isClicked('c')){
-			System.out.println(dummy.collider.body.getPosition());
-			System.out.println(dummy.transform.getPosition().x + "," + dummy.transform.getPosition().y);
-			dummy.transform.updateMatrix();
+			System.out.println(test.getWidth("Hello World!"));
+		
 		}
 		
 		if(Mouse.isClicked(0)){
@@ -156,8 +177,7 @@ public class Game implements Interface {
 
 	@Override
 	public void render(long delta) {
-		UIFont.prepRender();
-		test.print(10, 35, "Angelina is \n\n gay 4 dix");
+		
 	}
 
 }

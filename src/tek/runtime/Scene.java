@@ -7,6 +7,7 @@ import tek.render.Camera;
 import tek.render.Shader;
 import tek.render.TextureSheet;
 import tek.runtime.ParticleSystem.Particle;
+import tek.ui.UIScene;
 
 public class Scene {
 	public static Scene current = null;
@@ -23,6 +24,8 @@ public class Scene {
 	public Physics physics;
 	public ArrayList<ParticleSystem> particleSystems;
 	
+	public UIScene uiScene;
+	
 	{
 		camera = new Camera();
 		
@@ -32,6 +35,8 @@ public class Scene {
 		particleSystems = new ArrayList<ParticleSystem>();
 		
 		physics = new Physics();
+		
+		uiScene = new UIScene();
 	}
 	
 	public Scene(){
@@ -155,6 +160,7 @@ public class Scene {
 			render(system);
 		}
 		
+		uiScene.render();
 	}
 	
 	public void render(ParticleSystem psystem){

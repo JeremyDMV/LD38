@@ -85,9 +85,11 @@ public class TextureSheet {
 	public static TextureSheet getSheet(Texture texture){
 		if(sheets == null)
 			return null;
+		
 		for(TextureSheet sheet : sheets)
 			if(sheet.texture.equals(texture))
 				return sheet;
+		
 		return null;
 	}
 	

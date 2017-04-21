@@ -14,8 +14,6 @@ import tek.Window;
 import tek.render.Shader;
 
 public class UIFont {
-	public static Shader defaultShader;
-	
 	private int texId;
 	private float fontHeight = 16.0f;
 	
@@ -40,8 +38,29 @@ public class UIFont {
 	public static void prepRender(){
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0.0, Window.instance.getWidth(), Window.instance.getHeight(), 0.0, -1.0, 1.0);
+		GL11.glOrtho(0.0, Window.instance.getWidth(), 0f, Window.instance.getHeight(), -1.0, 1.0);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	}
+	
+	public float getWidth(String text){
+		float w = 0; 
+		FloatBuffer xbuf = BufferUtils.createFloatBuffer(1);
+		FloatBuffer ybuf = BufferUtils.createFloatBuffer(1);
+		
+		STBTTAlignedQuad q = STBTTAlignedQuad.malloc();
+		for(char c : text.toCharArray()){
+			if(c == '\n'){
+				continue;
+			}else if(c < 32 || c > 128){
+				continue;
+			}
+			
+			STBTruetype.stbtt_GetBakedQuad(cdata, 512, 512, (int)(c - 32), xbuf, ybuf, q, true);
+			
+			w += q.x1() - q.x0();
+		}
+		
+		return w;
 	}
 	
 	public void print(float x, float y, String text){

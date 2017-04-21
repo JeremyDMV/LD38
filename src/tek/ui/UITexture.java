@@ -1,11 +1,8 @@
 package tek.ui;
 
-import org.joml.Vector2d;
-import org.joml.Vector2f;
-
 import tek.render.Texture;
 
-public abstract class UITexture extends UIElement {
+public class UITexture extends UIElement {
 	
 	public Texture texture;
 	public int subTexture = -1;

@@ -2,13 +2,21 @@ package tek.ui;
 
 import java.util.ArrayList;
 
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
 import tek.Window;
 import tek.input.Keyboard;
 import tek.input.Mouse;
+import tek.render.Camera;
+import tek.render.Shader;
+import tek.render.TextureSheet;
+import tek.runtime.GameObject;
+import tek.runtime.Scene;
 
 public class UIScene {
+	public static Shader defaultShader;
+	
 	private Vector2f size;
 	
 	public ArrayList<UITexture> textures;
@@ -18,12 +26,15 @@ public class UIScene {
 	
 	public UIOptions options;
 	
+	private Camera camera;
+	
 	{
 		textures = new ArrayList<UITexture>();
 		texts    = new ArrayList<UIText>();
 		clicks   = new ArrayList<ClickType>();
 		
 		size = new Vector2f();
+		
 		resized();
 	}
 	
@@ -54,7 +65,41 @@ public class UIScene {
 	}
 	
 	public void render(){
+		Camera camera = Scene.current.camera;
 		
+		defaultShader.bind();
+		
+		//get the UI Projection matrix
+		Matrix4f mat = camera.getUI();
+		
+		defaultShader.set("projection", mat);
+		
+		for(UITexture texture : textures){
+			defaultShader.set("model", texture.getMatrix());
+			
+			if(texture.subTexture != -1){
+				defaultShader.set("SUB_TEXTURE", true);
+				
+				TextureSheet sheet = TextureSheet.getSheet(texture.texture);
+				
+				defaultShader.set("SUB_SIZE", sheet.subSize);
+				defaultShader.set("TEXTURE_OFFSET", sheet.getOffset(texture.subTexture));
+				defaultShader.set("TEXTURE_SIZE", sheet.texture.size);
+			}
+			
+			//totally not confusing
+			texture.texture.bind();
+			
+			GameObject.quad.draw();
+		}
+		
+		Shader.unbind();
+		
+		UIFont.prepRender();
+		
+		for(UIText text : texts){
+			text.draw();
+		}
 	}
 	
 	public void update(long delta){

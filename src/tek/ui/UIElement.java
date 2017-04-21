@@ -1,26 +1,47 @@
 package tek.ui;
 
+import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 
+import tek.runtime.Transform;
 import tek.ui.UIScene.ClickType;
 
 public abstract class UIElement {
 	public Vector2f position, size;
 	private boolean focused = false;
 	
+	public int layer;
+	
+	private Matrix4f mat;
+	
+	public UICallback callback;
+	
 	{
 		position = new Vector2f();
 		size = new Vector2f();
+		mat = new Matrix4f();
 	}
 
-	//focus events
-	public abstract void onFocusEnter();
-	public abstract void onFocus();
-	public abstract void onFocusExit();
+	public void onFocusEnter(){
+		if(callback != null)
+			callback.onFocusEnter();
+	}
 	
-	//click events
-	public abstract void onClick(ClickType type);
+	public void onFocus(){
+		if(callback != null)
+			callback.onFocus();
+	}
+	
+	public void onFocusExit(){
+		if(callback != null)
+			callback.onFocusExit();
+	}
+	
+	public void onClick(ClickType type){
+		if(callback != null)
+			callback.onClick(type);
+	}
 	
 	public void focusEnter(){
 		focused = true;
@@ -61,5 +82,23 @@ public abstract class UIElement {
 			}
 		}
 		return false;	
+	}
+	
+	public void updateMatrix(){
+		mat.identity();
+		mat.translate(position.x, position.y, layer * Transform.LAYER_MOD);
+		//mat.rotateZ((float)Math.toRadians(rotation));
+		mat.scale(size.x, size.y, 1f);
+	}
+	
+	protected Matrix4f getMatrix(){
+		return mat;
+	}
+	
+	public static interface UICallback {
+		public void onFocusEnter();
+		public void onFocus();
+		public void onFocusExit();
+		public void onClick(ClickType type);
 	}
 }

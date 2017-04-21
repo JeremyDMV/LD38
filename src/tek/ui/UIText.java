@@ -5,12 +5,22 @@ import org.joml.Vector3f;
 import tek.ui.UIScene.ClickType;
 
 public class UIText extends UIElement {
+	public static UIFont defaultFont;
 	
-	public String text;
+	private float width = 0f;
+	
+	private String text;
 	public Vector3f color;
+	
+	public UIFont font = defaultFont;
 	
 	{
 		color = new Vector3f(1f);
+	}
+	
+	public UIText(UIFont font){
+		this.font = font;
+		initialize();
 	}
 	
 	public UIText(String text){
@@ -18,8 +28,35 @@ public class UIText extends UIElement {
 		initialize();
 	}
 	
+	public UIText(String text, UIFont font){
+		this.font = font;
+		this.text = text;
+		initialize();
+	}
+	
 	private void initialize(){
-		
+		if(text != null){
+			width = font.getWidth(text);
+		}
+	}
+	
+	public void setText(String text){
+		if(this.text.equals(text))
+			return;
+		this.text = text;
+		this.width = font.getWidth(text);
+	}
+	
+	public String getText(){
+		return text;
+	}
+	
+	public float getWidth(){
+		return width;
+	}
+	
+	public void draw(){
+		font.print(this.position.x, this.position.y, text);
 	}
 	
 	@Override
