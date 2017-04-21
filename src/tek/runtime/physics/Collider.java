@@ -7,7 +7,6 @@ import org.jbox2d.dynamics.Fixture;
 import org.joml.Vector2f;
 
 import tek.runtime.GameObject;
-import tek.runtime.Physics;
 import tek.runtime.Physics.CollisionCallback;
 
 public abstract class Collider {
@@ -44,6 +43,10 @@ public abstract class Collider {
 		Vec2 v = body.getPosition();
 		this.position.set(v.x, v.y);
 		parent.transform.setPosition(v.x, v.y);
+	}
+	
+	public GameObject getParent(){
+		return parent;
 	}
 	
 	public void setCallback(CollisionCallback callback){

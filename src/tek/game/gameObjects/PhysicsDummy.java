@@ -29,7 +29,9 @@ public class PhysicsDummy extends GameObject {
 		subTexture = 3;
 		transform.setSize(10f, 10f);
 		transform.setPosition(1f, 1f);
-		
+	}
+	
+	public void setupCallback(){
 		collider.setCallback(new CollisionCallback(){
 			@Override
 			public void onCollisionEnter(Collider collider) {

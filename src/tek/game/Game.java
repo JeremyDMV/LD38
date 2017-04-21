@@ -13,7 +13,6 @@ import tek.render.Animation;
 import tek.render.Shader;
 import tek.render.Texture;
 import tek.render.TextureSheet;
-import tek.runtime.GameObject;
 import tek.runtime.ParticleSystem;
 import tek.runtime.Scene;
 import tek.runtime.physics.BoxCollider;
@@ -80,6 +79,7 @@ public class Game implements Interface {
 		dummy.transform.setSize(10f, 10f);
 		
 		dummy.setCollider(new BoxCollider(dummy, dummy.transform.getSize()));
+		dummy.setupCallback();
 		
 		Scene.current.add(dummy);
 		

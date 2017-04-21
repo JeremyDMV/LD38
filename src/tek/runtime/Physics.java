@@ -136,9 +136,9 @@ public class Physics {
 			Collider cb = null;
 			
 			for(Collider c : p.colliders){
-				if(c.fixture == a)
+				if(c.body == a.getBody())
 					ca = c;
-				if(c.fixture == b)
+				if(c.body == b.getBody())
 					cb = c;
 			}
 			
@@ -160,9 +160,9 @@ public class Physics {
 			Collider cb = null;
 			
 			for(Collider c : p.colliders){
-				if(c.fixture == a)
+				if(c.body == a.getBody())
 					ca = c;
-				if(c.fixture == b)
+				if(c.body == b.getBody())
 					cb = c;
 			}
 			

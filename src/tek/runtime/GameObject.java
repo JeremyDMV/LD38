@@ -2,8 +2,6 @@ package tek.runtime;
 
 import java.util.Arrays;
 
-import org.joml.Vector2f;
-
 import tek.audio.Source;
 import tek.render.Animation;
 import tek.render.Quad;
