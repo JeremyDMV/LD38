@@ -1,9 +1,24 @@
 package tek;
 
+import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL11.glTexImage2D;
+import static org.lwjgl.opengl.GL11.glTexParameteri;
+import static org.lwjgl.stb.STBImage.stbi_image_free;
+import static org.lwjgl.stb.STBImage.stbi_info_from_memory;
+import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
@@ -20,12 +35,85 @@ import java.util.Map.Entry;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL30;
 
 public class Util {
 	private static String lineSeparator = "";
 	
 	static{
 		lineSeparator = System.getProperty("line.separator");
+	}
+	
+	public static class TextureBuffer {
+		public final byte[] pixels;
+		public final int width, height;
+		public final String path;
+		public final int comp;
+		
+		public TextureBuffer(String path, byte[] pixels, int width, int height, int comp){
+			this.path = path;
+			this.pixels = pixels;
+			this.width = width;
+			this.height = height;
+			this.comp = comp;
+		}
+		
+		public int getR(int x, int y){
+			if(x > width || y < height)
+				return -1;
+			return (pixels[x + width * y] >> 16) & 0xFF;
+		}
+		
+		public int getG(int x, int y){
+			if(x > width || y < height)
+				return -1;
+			return (pixels[x + width * y] >> 8) & 0xFF;
+		}
+		
+		public int getB(int x, int y){
+			if(x > width || y < height)
+				return -1;
+			return (pixels[x + width * y] >> 0xFF);
+		}
+		
+		public int getA(int x, int y){
+			if(x > width || y < height)
+				return -1;
+			return (pixels[x + width * y] >> 24 ) & 0xFF;
+		}
+	}
+	
+	public static TextureBuffer getTextureBuffer(String path){
+		IntBuffer w = BufferUtils.createIntBuffer(1);
+		IntBuffer h = BufferUtils.createIntBuffer(1);
+		IntBuffer c = BufferUtils.createIntBuffer(1);
+		
+		ByteBuffer data = ResourceLoader.getBytes(path);
+		
+		if(stbi_info_from_memory(data, w, h, c) != 1)
+			Application.error("Unable to load:" + path);
+		
+		ByteBuffer formatted = stbi_load_from_memory(data, w, h, c, 0);
+		
+		if(formatted == null)
+			Application.error("Unable to format file: " + path);
+		
+		int width = w.get(0);
+		int height = h.get(0);
+		int comp   = c.get(0);
+		
+		byte[] pixels = formatted.array();
+		
+		stbi_image_free(formatted);
+		
+		formatted.clear();
+		data.clear();
+		
+		w.clear();
+		h.clear();
+		c.clear();
+		
+		return new TextureBuffer(path, pixels, width, height, comp);
 	}
 	
 	public static String toString(Vector3f vec){
