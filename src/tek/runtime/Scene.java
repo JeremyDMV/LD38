@@ -97,6 +97,10 @@ public class Scene {
 			add(gameObject);
 	}
 	
+	public void input(long delta){
+		uiScene.input(delta);
+	}
+	
 	public void update(long delta){
 		for(GameObject gameObject : gameObjects){
 			gameObject.update(delta);
@@ -105,6 +109,8 @@ public class Scene {
 		for(ParticleSystem system : particleSystems){
 			system.update(delta);
 		}
+		
+		uiScene.update(delta);
 		
 		//check for updates and fix any world positioning
 		physics.prep();
@@ -188,7 +194,12 @@ public class Scene {
 		Shader.unbind();
 	}
 	
+	public void swap(){
+		gameObjects.clear();
+	}
+	
 	public void destroy(boolean fullExit){
+		gameObjects.clear();
 		if(fullExit){
 			for(Shader shader : renderables.keySet()){
 				if(shader != null)

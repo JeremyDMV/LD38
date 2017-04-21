@@ -26,8 +26,6 @@ public class UIScene {
 	
 	public UIOptions options;
 	
-	private Camera camera;
-	
 	{
 		textures = new ArrayList<UITexture>();
 		texts    = new ArrayList<UIText>();
@@ -46,22 +44,70 @@ public class UIScene {
 		size.set(Window.instance.getWidth(), Window.instance.getHeight());
 	}
 	
-	public void input(long delta){
-		if(options != null)
-			options.input();
-		
-		clicks.clear();
-		for(int i : Keyboard.events){
-			clicks.add(new ClickType(false, i));
-		}
-		
-		for(int i : Mouse.events){
-			clicks.add(new ClickType(true, i));
+	public Vector2f flipY(double x, double y){
+		return new Vector2f((float)(x), (float)(size.y - y));
+	}
+	
+	public void add(UIElement[] elements){
+		for(UIElement e : elements)
+			add(e);
+	}
+	
+	public void add(ArrayList<UIElement> elements){
+		for(UIElement e : elements)
+			add(e);
+	}
+	
+	public void add(UIElement element){
+		if(element instanceof UITexture){
+			textures.add((UITexture)element);
+		}else if(element instanceof UIText){
+			texts.add((UIText)element);
 		}
 	}
 	
-	public Vector2f flipY(double x, double y){
-		return new Vector2f((float)(x), (float)(size.y - y));
+	public void remove(UIElement[] elements){
+		for(UIElement e : elements)
+			remove(e);
+	}
+	
+	public void remove(ArrayList<UIElement> elements){
+		for(UIElement e : elements)
+			remove(e);
+	}
+	
+	public void remove(UIElement element){
+		if(element instanceof UITexture){
+			textures.remove((UITexture)element);
+		}else if(element instanceof UIText){
+			texts.remove((UIText)element);
+		}
+	}
+	
+	public void center(UIElement element){
+		if(element instanceof UITexture){
+			UITexture t = (UITexture)element;
+			float x = (size.x - t.size.x)  / 2f;
+			float y = (size.y - t.size.y)  / 2f;
+			t.position.set(x, y);
+			
+			t.updateMatrix();
+		}else if(element instanceof UIText){
+			UIText t = (UIText)element;
+			float x = (size.x - t.getWidth()) / 2f;
+			float y = (size.y - t.getHeight()) / 2f;
+			t.position.set(x, y);
+		}
+	}
+	
+	public void input(long delta){
+		if(options != null)
+			options.input();
+	}
+	
+	public void update(long delta){
+		if(options != null)
+			options.update(delta);
 	}
 	
 	public void render(){
@@ -102,31 +148,60 @@ public class UIScene {
 		}
 	}
 	
-	public void update(long delta){
-		if(options != null)
-			options.update(delta);
-	}
-	
 	public abstract static class UIOptions {
 		public boolean wrap = true;
-		public final UIOption[] options;
+		public final UIElement[] options;
+		public final UIScene scene;
 		
 		public int current = 0;
 		
-		public UIOptions(UIOption[] options){
+		public UIOptions(UIScene scene, UIElement[] options){
 			this.options = options;
+			this.scene = scene;
+			
+			scene.options = this;
+			scene.add(options);
 		}
 		
 		public abstract void Input();
 		public abstract void Update(long delta);
 		
 		public void update(long delta){
-			options[current].element.focus();
+			options[current].focus();
 			Update(delta);
 		}
 		
 		public void input(){
+			ArrayList<ClickType> clicks = new ArrayList<ClickType>();
 			
+			for(int k : Keyboard.events){
+				clicks.add(new ClickType(false, k));
+			}
+			
+			//focused element listens to the keyboard clicks
+			for(ClickType click : clicks){
+				options[current].onClick(click);
+			}
+			
+			clicks.clear();
+			
+			for(int m : Mouse.events){
+				clicks.add(new ClickType(true, m));
+			}
+			
+			Vector2f mPos = scene.flipY(Mouse.x, Mouse.y);
+			
+			if(clicks.size() != 0){
+				for(UIElement option : options){
+					if(option.contains(mPos)){
+						clicks.forEach((click)->option.onClick(click));
+					}
+				}
+				
+				clicks.clear();
+			}
+			
+			Input();
 		}
 		
 		public int next(){
@@ -151,17 +226,13 @@ public class UIScene {
 			if(index < 0 || index > options.length - 1){
 				return;
 			}
-			options[current].element.focusExit();
+			options[current].focusExit();
 			current = index;
-			options[current].element.focusEnter();
+			options[current].focusEnter();
 		}
 		
-		public static class UIOption {
-			public UIElement element;
-			
-			public UIOption(UIElement element){
-				this.element = element;
-			}
+		public void destroy(){
+			scene.remove(options);
 		}
 	}
 	

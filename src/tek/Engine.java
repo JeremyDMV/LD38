@@ -195,6 +195,9 @@ public class Engine {
 		Mouse.update();
 		Joystick.updateAll();
 		
+		
+		scene.input(delta);
+		
 		//call for any input methods to be used
 		_interface.input(delta);
 	}

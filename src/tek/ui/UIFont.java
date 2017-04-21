@@ -3,8 +3,6 @@ package tek.ui;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBTTAlignedQuad;
@@ -13,9 +11,6 @@ import org.lwjgl.stb.STBTruetype;
 
 import tek.ResourceLoader;
 import tek.Window;
-import tek.render.Shader;
-import tek.runtime.GameObject;
-import tek.runtime.Scene;
 
 public class UIFont {
 	private int texId;
@@ -65,6 +60,10 @@ public class UIFont {
 		}
 		
 		return w;
+	}
+	
+	public float getHeight(){
+		return fontHeight;
 	}
 	
 	public void print(float x, float y, String text){

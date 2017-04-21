@@ -8,6 +8,7 @@ import tek.audio.Music;
 import tek.game.gameObjects.LevelBound;
 import tek.game.gameObjects.PhysicsDummy;
 import tek.game.levels.TestLevel;
+import tek.game.levels.TestOptions;
 import tek.input.Keyboard;
 import tek.input.Mouse;
 import tek.render.Animation;
@@ -93,7 +94,9 @@ public class Game implements Interface {
 		
 		ui.textures.add(texture);
 		ui.texts.add(text);
-
+		
+		TestOptions options = TestOptions.create(ui);
+		
 		gameObject.texture = sheet.texture;
 		gameObject.subTexture = 120;
 		gameObject.transform.setSize(10f, 10f);
@@ -154,7 +157,7 @@ public class Game implements Interface {
 	@Override
 	public void input(long delta) {
 		if(Keyboard.isClicked('c')){
-			System.out.println(test.getWidth("Hello World!"));
+			System.out.println(ui.textures.size());
 		
 		}
 		

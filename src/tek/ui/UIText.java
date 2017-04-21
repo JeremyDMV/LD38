@@ -12,6 +12,8 @@ public class UIText extends UIElement {
 	private String text;
 	public Vector3f color;
 	
+	private float scale = 1.0f;
+	
 	public UIFont font = defaultFont;
 	
 	{
@@ -53,6 +55,26 @@ public class UIText extends UIElement {
 	
 	public float getWidth(){
 		return width;
+	}
+	
+	public float getScale(){
+		return scale;
+	}
+	
+	public void setScale(float scale){
+		this.scale = scale;
+	}
+	
+	public float getHeight(){
+		return font.getHeight() * scale;
+	}
+	
+	public void setFont(UIFont font){
+		this.font = font;
+	}
+	
+	public UIFont getFont(){
+		return font;
 	}
 	
 	public void draw(){
