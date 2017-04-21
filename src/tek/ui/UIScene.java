@@ -197,7 +197,6 @@ public class UIScene {
 						clicks.forEach((click)->option.onClick(click));
 					}
 				}
-				
 				clicks.clear();
 			}
 			
@@ -206,10 +205,9 @@ public class UIScene {
 		
 		public int next(){
 			int next = current + 1;
-			if(current == options.length){
+			if(current == options.length - 1){
 				next = (wrap) ? 0 :  current;
 			}
-			
 			return next;
 		}
 		
@@ -218,7 +216,6 @@ public class UIScene {
 			if(current == 0){
 				prev = (wrap) ? options.length - 1 : current;
 			}
-			
 			return prev;
 		}
 		

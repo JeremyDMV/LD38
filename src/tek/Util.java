@@ -1,15 +1,5 @@
 package tek;
 
-import static org.lwjgl.opengl.GL11.GL_NEAREST;
-import static org.lwjgl.opengl.GL11.GL_RGBA;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glGenTextures;
-import static org.lwjgl.opengl.GL11.glTexImage2D;
-import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
 import static org.lwjgl.stb.STBImage.stbi_info_from_memory;
 import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
@@ -34,8 +24,8 @@ import java.util.Map.Entry;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL30;
 
 public class Util {
 	private static String lineSeparator = "";
@@ -59,27 +49,39 @@ public class Util {
 		}
 		
 		public int getR(int x, int y){
-			if(x > width || y < height)
+			if(x > width || y > height || x < 0 || y < 0)
 				return -1;
-			return (pixels[x + width * y] >> 16) & 0xFF;
+			int index = (x + width * y);
+			return (pixels[index]) & 0xFF;
 		}
 		
 		public int getG(int x, int y){
-			if(x > width || y < height)
+			if(x > width || y > height || x < 0 || y < 0)
 				return -1;
-			return (pixels[x + width * y] >> 8) & 0xFF;
+			int index = (x + width * y);
+			return (pixels[index + 1]) & 0xFF;
 		}
 		
 		public int getB(int x, int y){
-			if(x > width || y < height)
+			if(x > width || y > height || x < 0 || y < 0)
 				return -1;
-			return (pixels[x + width * y] >> 0xFF);
+			int index = (x + width * y);
+			return (pixels[index + 2]);
 		}
 		
 		public int getA(int x, int y){
-			if(x > width || y < height)
+			if(x > width || y > height || x < 0 || y < 0)
 				return -1;
-			return (pixels[x + width * y] >> 24 ) & 0xFF;
+			int index = (x + width * y);
+			return (pixels[index + 3]) & 0xFF;
+		}
+		
+		public Vector4f getColor(int x, int y){
+			return new Vector4f(
+					getR(x, y),
+					getG(x, y),
+					getB(x, y),
+					getA(x, y));
 		}
 	}
 	
@@ -102,18 +104,21 @@ public class Util {
 		int height = h.get(0);
 		int comp   = c.get(0);
 		
-		byte[] pixels = formatted.array();
+		System.out.println("CAP");
 		
-		stbi_image_free(formatted);
+		System.out.println(formatted.capacity());
 		
-		formatted.clear();
+		byte[] buf = new byte [formatted.remaining()];
+		
+		formatted.get(buf);
+		
 		data.clear();
 		
 		w.clear();
 		h.clear();
 		c.clear();
 		
-		return new TextureBuffer(path, pixels, width, height, comp);
+		return new TextureBuffer(path, buf, width, height, comp);
 	}
 	
 	public static String toString(Vector3f vec){

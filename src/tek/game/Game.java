@@ -2,6 +2,8 @@ package tek.game;
 
 import org.joml.Vector2f;
 
+import tek.Util;
+import tek.Util.TextureBuffer;
 import tek.Window;
 import tek.audio.Mixer;
 import tek.audio.Music;
@@ -145,6 +147,8 @@ public class Game implements Interface {
 		bounds.transform.setPosition(0f, 0f);
 		bounds.setCollider(new BoxCollider(bounds, new Vector2f(100f, 1f), ColliderType.STATIC));
 		
+		TextureBuffer b = Util.getTextureBuffer("textures/texsheet.png");
+		System.out.println(b.width + " : " + b.height);
 		
 		Scene.current.add(bounds);
 	}
