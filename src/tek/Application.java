@@ -94,12 +94,13 @@ public class Application {
 			addPipe(new WhitelistPipeRule(System.err, LOG_ERROR));
 		}
 		
-		if(WRITE_ERRORS)
+		if(WRITE_ERRORS){
 			try {
 				addPipe(new WhitelistPipeRule(new PrintStream(new FileOutputStream(errorFile)), LOG_ERROR));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
+		}
 		
 		if(DEBUG_INPUT){
 			inputTask = new InputTask(System.in, input);

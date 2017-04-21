@@ -17,6 +17,8 @@ public class Source {
 	private boolean play = false, pause = false; //stopped = false false, paused = 0 + 1 or 1 + 1, playing = 1 + 0
 	private boolean loop = false;
 	
+	public boolean oneshot = false;
+	
 	private float gain = 1.0f;
 	
 	public Vector3f position;
@@ -56,6 +58,12 @@ public class Source {
 		AL10.alSourcei(id, AL10.AL_BUFFER, sound.id);
 	}
 	
+	public void update(){
+		int state = AL10.alGetSourcei(id, AL10.AL_SOURCE_STATE);
+		if(state != AL10.AL_PLAYING && state != AL10.AL_PAUSED)
+			stop();
+	}
+	
 	public void enable(){
 		enabled = true;
 	}
@@ -81,7 +89,7 @@ public class Source {
 	}
 	
 	public void play(){
-		if(isPlaying())
+		if(isPlaying() && oneshot)
 			return;
 		play = true;
 		pause = false;

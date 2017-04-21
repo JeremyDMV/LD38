@@ -7,6 +7,8 @@ import tek.Util.TextureBuffer;
 import tek.Window;
 import tek.audio.Mixer;
 import tek.audio.Music;
+import tek.audio.Sound;
+import tek.audio.Source;
 import tek.game.gameObjects.LevelBound;
 import tek.game.gameObjects.PhysicsDummy;
 import tek.game.levels.TestLevel;
@@ -40,6 +42,8 @@ public class Game implements Interface {
 	public UITexture texture;
 	public UIText text;
 	
+	public Source source;
+	public Sound sound;
 	
 	public void loadLevel(Level level){
 		if(this.level != null)
@@ -67,6 +71,11 @@ public class Game implements Interface {
 		Mixer.instance.createChannel("sfx");
 		
 		music = new Music("audio/bg.ogg");
+		
+		sound = new Sound("audio/testsound.ogg");
+		source = new Source(sound);
+		
+		Mixer.instance.addTo(source, "sfx");
 		
 		Mixer.instance.addTo(music, "music");
 		
@@ -165,14 +174,16 @@ public class Game implements Interface {
 		
 		}
 		
-		if(Mouse.isClicked(0)){
-			System.out.println(""+Mouse.x + " : " + Mouse.y);
-			Vector2f flipped = ui.flipY(Mouse.x, Mouse.y);
-			System.out.println(flipped.x + " : " + flipped.y);
-		}
+		if(Keyboard.isClicked('i'))
+			source.play();
+		if(Keyboard.isClicked('u'))
+			source.stop();
 		
 		if(Keyboard.isClicked('p'))
-			music.play();
+			if(music.isPlaying())
+				music.pause();
+			else
+				music.play();
 		
 		dummy.collider.applyLinearImpulse(new Vector2f(Keyboard.getButton("horizontal") * 10f, 0f), new Vector2f(0f, 0f));
 	}

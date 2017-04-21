@@ -187,6 +187,10 @@ public class Mixer {
 			for(Music music : musics){
 				music.update();
 			}
+			
+			for(Source source : sources){
+				source.update();
+			}
 		}
 		
 		public void add(Source source){
