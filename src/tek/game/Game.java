@@ -177,7 +177,6 @@ public class Game implements Interface {
 
 	@Override
 	public void render(long delta) {
-		
 	}
 
 }

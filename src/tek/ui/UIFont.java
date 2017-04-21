@@ -3,6 +3,8 @@ package tek.ui;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBTTAlignedQuad;
@@ -12,13 +14,15 @@ import org.lwjgl.stb.STBTruetype;
 import tek.ResourceLoader;
 import tek.Window;
 import tek.render.Shader;
+import tek.runtime.GameObject;
+import tek.runtime.Scene;
 
 public class UIFont {
 	private int texId;
 	private float fontHeight = 16.0f;
 	
 	private STBTTBakedChar.Buffer cdata;
-	
+		
 	public UIFont(String path, float fontHeight){
 		ByteBuffer data = ResourceLoader.getBytes(path);
 		
@@ -38,7 +42,7 @@ public class UIFont {
 	public static void prepRender(){
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0.0, Window.instance.getWidth(), 0f, Window.instance.getHeight(), -1.0, 1.0);
+		GL11.glOrtho(0.0, Window.instance.getWidth(), Window.instance.getHeight(), 0.0, -1.0, 1.0);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 	
@@ -71,7 +75,7 @@ public class UIFont {
 		FloatBuffer ybuf = BufferUtils.createFloatBuffer(1);
 		
 		xbuf.put(x);
-		ybuf.put(y);
+		ybuf.put(Window.instance.getHeight() - y);
 		
 		xbuf.flip();
 		ybuf.flip();
@@ -91,7 +95,6 @@ public class UIFont {
 			
 			STBTruetype.stbtt_GetBakedQuad(cdata, 512, 512, (int)(c - 32), xbuf, ybuf, q, true);
 			
-
 			GL11.glTexCoord2f(q.s0(), q.t0());
 			GL11.glVertex2f(q.x0(), q.y0());
 
