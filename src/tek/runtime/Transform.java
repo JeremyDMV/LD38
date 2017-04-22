@@ -70,7 +70,7 @@ public class Transform {
 	
 	public void updateMatrix(){
 		mat.identity();
-		mat.translate(position.x, position.y, layer * LAYER_MOD);
+		mat.translate(position.x, position.y, -layer * LAYER_MOD);
 		mat.rotateZ((float)Math.toRadians(rotation));
 		mat.scale(size.x, size.y, 1f);
 		updateNeeded = false;

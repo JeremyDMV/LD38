@@ -2,6 +2,7 @@ package tek.game;
 
 import tek.audio.Mixer;
 import tek.game.gameObjects.Player;
+import tek.game.levels.StartLevel;
 import tek.game.levels.UpperLevel;
 import tek.input.Keyboard;
 import tek.render.Shader;
@@ -32,7 +33,7 @@ public class Game implements Interface {
 	public void start() {
 		setupDefaults();
 		
-		loadLevel(new UpperLevel());
+		loadLevel(new StartLevel());
 		
 		player = new Player();
 		player.transform.setPosition(10, 10);
@@ -71,11 +72,12 @@ public class Game implements Interface {
 	@Override
 	public void input(long delta) {
 		player.input(delta);
+		level.input(delta);
 	}
 
 	@Override
 	public void update(long delta) {
-		
+		level.update(delta);
 	}
 
 	@Override

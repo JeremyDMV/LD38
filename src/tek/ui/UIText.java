@@ -86,7 +86,7 @@ public class UIText extends UIElement {
 	}
 	
 	public void draw(){
-		font.print(this.position.x, this.position.y, text, r, g, b);
+		font.printWrapped(this.position.x, this.position.y, scale, text, r, g, b, 300);
 	}
 	
 	@Override

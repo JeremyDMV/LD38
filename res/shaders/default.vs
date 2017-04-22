@@ -14,7 +14,7 @@ uniform int FLIP_Y;
 uniform vec2 SUB_SIZE;
 uniform vec2 TEXTURE_SIZE;
 uniform vec2 TEXTURE_OFFSET;
-uniform vec2 TEXTURE_REPEAT; //TODO
+uniform vec2 TEXTURE_REPEAT = vec2(1); //TODO
 
 out vec2 OUT_TEXCOORD;
 
@@ -22,7 +22,7 @@ void main(){
 	gl_Position = PROJECTION_MAT * VIEW_MAT * MODEL_MAT * vec4(in_position, 1.0);
 		
  	vec2 MOD_TEXCOORD = in_texcoord;
- 	
+	
  	if(FLIP_X == 1){
  		MOD_TEXCOORD.x = 1 - MOD_TEXCOORD.x;
  	}

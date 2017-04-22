@@ -37,7 +37,7 @@ public class Music {
 	private boolean playing = false, pause = false;
 	private boolean enabled = true;
 	
-	private float gain = 0.8f;
+	private float gain = 1.0f;
 	
 	private boolean started = false;
 	

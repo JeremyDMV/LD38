@@ -145,6 +145,8 @@ public class Scene {
 					shader.set("FLIP_X", gameObject.flipX);
 					shader.set("FLIP_Y", gameObject.flipY);
 					
+					//shader.set("TEXTURE_REPEAT", gameObject.textureRepeat);
+					
 					if(TextureSheet.isTextureSheet(gameObject.texture)){
 						if(gameObject.subTexture != -1){
 							shader.set("SUB_TEXTURE", true);

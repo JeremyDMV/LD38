@@ -3,6 +3,8 @@ package tek.runtime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.joml.Vector2f;
+
 import tek.audio.Source;
 import tek.render.Animation;
 import tek.render.Quad;
@@ -27,6 +29,8 @@ public abstract class GameObject {
 	public int currentAnimation = -1;
 	public ArrayList<Animation> animations;
 	
+	public Vector2f textureRepeat;
+	
 	//sound 
 	public Source source;
 	
@@ -40,6 +44,7 @@ public abstract class GameObject {
 	{
 		transform = new Transform(this);
 		animations = new ArrayList<Animation>();
+		textureRepeat = new Vector2f(1f);
 	}
 	
 	public GameObject(){

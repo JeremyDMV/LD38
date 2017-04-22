@@ -1,6 +1,9 @@
 package tek.game.levels;
 
+import org.joml.Vector2f;
+
 import tek.game.Level;
+import tek.game.TextAnimator;
 import tek.input.Keyboard;
 import tek.runtime.Scene;
 import tek.ui.UIElement;
@@ -14,21 +17,32 @@ public class StartLevel extends Level {
 
 	
 	StartOptions uiOptions;
+	TextAnimator anim;
 	
 	@Override
 	public void start() {
 		UIText t = new UIText("this is a test");
 		Scene.current.uiScene.add(t);
 		
+		String msg = "I wonder how all of this will play out in the end.";
+			
+		Vector2f s = UIText.defaultFont.getWrappedSize(msg, 1f, 200);
+		System.out.println(s.x + " : " + s.y);
+		
 		UIElement[] options = new UIElement[] {
-			new UIText("START"),			
+			new UIText(msg),			
 			new UIText("OPTIONS"),			
 			new UIText("EXIT"),			
 		};
 		
 		options[0].position.set(0, 100);
+		((UIText)options[0]).setScale(0.4f);
+		
 		options[1].position.set(0, 66);
 		options[2].position.set(0, 33);
+		
+		anim = new TextAnimator(msg, 100);
+		anim.target = (UIText)options[0];
 		
 		options[0].setCallback(new UIElement.UICallback(){
 			public UIElement e;
@@ -64,12 +78,14 @@ public class StartLevel extends Level {
 			
 		});
 		
-		centerOnWidest(options);
+		//centerOnWidest(options);
 		
 		Scene.current.uiScene.center(options);
 		
 		uiOptions = new StartOptions(Scene.current.uiScene, options);
 		Scene.current.uiScene.options = uiOptions;
+		
+		anim.start();
 	}
 	
 	public void centerOnWidest(UIElement[] elements){
@@ -108,9 +124,22 @@ public class StartLevel extends Level {
 		
 	}
 
+
+	@Override
+	public void input(long delta){
+		if(Keyboard.isClicked(Keyboard.KEY_SPACE)){
+			if(!anim.isCompleted())
+				anim.increaseSpeed();
+			else{
+				anim.reset();
+				anim.start();
+			}
+		}
+	}
+	
 	@Override
 	public void update(long delta) {
-		
+		anim.update(delta);
 	}
 	
 	public static class StartOptions extends UIOptions {

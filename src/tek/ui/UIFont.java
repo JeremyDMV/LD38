@@ -3,6 +3,7 @@ package tek.ui;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBTTAlignedQuad;
@@ -62,15 +63,54 @@ public class UIFont {
 		return w;
 	}
 	
+	public Vector2f getWrappedSize(String text, float scale, int maxWidth){
+		float maxw = Float.MIN_VALUE;
+		Vector2f s = new Vector2f();
+		
+		FloatBuffer xbuf = BufferUtils.createFloatBuffer(1);
+		FloatBuffer ybuf = BufferUtils.createFloatBuffer(1);
+		
+		STBTTAlignedQuad q = STBTTAlignedQuad.malloc();
+		for(char c : text.toCharArray()){
+			if(c == '\n'){
+				continue;
+			}else if(c < 32 || c > 128){
+				continue;
+			}
+			
+			STBTruetype.stbtt_GetBakedQuad(cdata, 512, 512, (int)(c - 32), xbuf, ybuf, q, true);
+			
+			float w = q.x1() - q.x0();
+			s.x += w;
+			
+			if(s.x >= maxWidth){
+				maxw = Math.max(s.x, maxw);
+				s.x = 0;
+				s.y += (fontHeight * 2);
+				s.x += w;
+				
+				xbuf.put(0, 0);
+				ybuf.put(0, ybuf.get(0) + (fontHeight * 2));
+			}
+		}
+		
+		s.x = maxw;
+		s.mul(scale);
+		return s;
+	}
+	
 	public float getHeight(){
 		return fontHeight;
 	}
 	
-	public void print(float x, float y, String text, float r, float g, float b){
+	public void printWrapped(float x, float y, float scale, String text, float r, float g, float b, int wrapWidth){
+		GL11.glPushMatrix();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texId);
 		
 		GL11.glColor3f(r, g, b);
+		
+		GL11.glScalef(scale, scale, 1f);
 		
 		FloatBuffer xbuf = BufferUtils.createFloatBuffer(1);
 		FloatBuffer ybuf = BufferUtils.createFloatBuffer(1);
@@ -87,7 +127,63 @@ public class UIFont {
 		
 		for(char c : text.toCharArray()){
 			if(c == '\n'){
-				ybuf.put(0, ybuf.get(0) + fontHeight);
+				ybuf.put(0, ybuf.get(0) + (fontHeight * 2f));
+				xbuf.put(0, x);
+				continue;
+			}else if(c < 32 || c > 128){
+				continue;
+			}
+			
+			float nextX = q.x1() * scale;
+			if(nextX >= wrapWidth){
+				xbuf.put(0, x);
+				ybuf.put(0,ybuf.get(0) + (fontHeight * 2f));
+			}
+			
+			STBTruetype.stbtt_GetBakedQuad(cdata, 512, 512, (int)(c - 32), xbuf, ybuf, q, true);
+			
+			GL11.glTexCoord2f(q.s0(), q.t0());
+			GL11.glVertex2f(q.x0(), q.y0());
+
+			GL11.glTexCoord2f(q.s1(), q.t0());
+			GL11.glVertex2f(q.x1(), q.y0());
+
+			GL11.glTexCoord2f(q.s1(), q.t1());
+			GL11.glVertex2f(q.x1(), q.y1());
+
+			GL11.glTexCoord2f(q.s0(), q.t1());
+			GL11.glVertex2f(q.x0(), q.y1());
+		}
+		
+		GL11.glEnd();
+		GL11.glPopMatrix();
+	}
+	
+	public void print(float x, float y, float scale, String text, float r, float g, float b){
+		GL11.glPushMatrix();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texId);
+		
+		GL11.glColor3f(r, g, b);
+		
+		GL11.glScalef(scale, scale, 1f);
+		
+		FloatBuffer xbuf = BufferUtils.createFloatBuffer(1);
+		FloatBuffer ybuf = BufferUtils.createFloatBuffer(1);
+		
+		xbuf.put(x);
+		ybuf.put(Window.instance.getHeight() - y);
+		
+		xbuf.flip();
+		ybuf.flip();
+		
+		STBTTAlignedQuad q = STBTTAlignedQuad.malloc();
+		
+		GL11.glBegin(GL11.GL_QUADS);
+		
+		for(char c : text.toCharArray()){
+			if(c == '\n'){
+				ybuf.put(0, ybuf.get(0) + (fontHeight * 2f));
 				xbuf.put(0, x);
 				continue;
 			}else if(c < 32 || c > 128){
@@ -110,5 +206,6 @@ public class UIFont {
 		}
 		
 		GL11.glEnd();
+		GL11.glPopMatrix();
 	}
 }

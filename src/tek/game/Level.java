@@ -13,6 +13,7 @@ import tek.render.TextureSheet;
 public abstract class Level {
 	public abstract void start();
 	public abstract void end();
+	public abstract void input(long delta);
 	public abstract void update(long delta);
 	
 	public Music createMusic(String path){
