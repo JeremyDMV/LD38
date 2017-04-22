@@ -12,6 +12,7 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.Fixture;
+import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
 import org.joml.Vector2f;
@@ -31,7 +32,7 @@ public class Physics {
 	
 	{
 		colliders = new ArrayList<Collider>();
-		gravity = new Vector2f(0, -9.8f);
+		gravity = new Vector2f(0f, 0f);
 	}
 	
 	public Physics(){
@@ -60,7 +61,7 @@ public class Physics {
 	
 	public void update(long delta){
 		double adjusted = delta / 1000d;
-		world.step((float)(adjusted), 5, 2);
+		world.step((float)(adjusted), 16, 10);
 	}
 	
 	public void step(){
@@ -92,7 +93,14 @@ public class Physics {
 		
 		PolygonShape square = new PolygonShape();
 		square.setAsBox(size.x / 2f, size.y / 2f);
-		body.createFixture(square, 1.0f);
+		
+		FixtureDef fdef = new FixtureDef();
+		fdef.restitution = 0.0f;
+		fdef.density = 1.0f;
+		fdef.friction = 1.0f;
+		fdef.shape = square;
+		
+		Fixture f = body.createFixture(fdef);
 		
 		body.setType(type);
 		
@@ -108,6 +116,7 @@ public class Physics {
 		CircleShape circle = new CircleShape();
 		circle.setRadius(radius);
 		body.createFixture(circle, 1.0f);
+		body.setLinearDamping(1.0f);
 		
 		body.setType(type);
 		
@@ -177,12 +186,11 @@ public class Physics {
 
 		@Override
 		public void postSolve(Contact contact, ContactImpulse arg1) {
-			
 		}
 
 		@Override
 		public void preSolve(Contact contact, Manifold arg1) {
-			
+			contact.setRestitution(0f);
 		}
 		
 	}

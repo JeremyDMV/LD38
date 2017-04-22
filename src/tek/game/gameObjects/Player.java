@@ -6,6 +6,8 @@ import tek.input.Keyboard;
 import tek.render.Animation;
 import tek.render.TextureSheet;
 import tek.runtime.GameObject;
+import tek.runtime.physics.BoxCollider;
+import tek.runtime.physics.Collider.ColliderType;
 
 public class Player extends GameObject {
 	public int maxHealth = 10;
@@ -21,6 +23,7 @@ public class Player extends GameObject {
 	
 	
 	public Player(){
+		setCollider(new BoxCollider(this, new Vector2f(10f, 10f), ColliderType.DYNAMIC));
 		this.transform.setSize(10f, 10f);
 		this.subTexture = 1;
 		TextureSheet sheet = TextureSheet.getSheet("default");
@@ -77,8 +80,8 @@ public class Player extends GameObject {
 			flipX = true;
 		}
 		
-		transform.move((float)(h * moveSpeed * adjustedDelta),
-				(float)(v * moveSpeed * adjustedDelta));
+		float moveSpeed = (float)(this.moveSpeed * 50);
+		collider.setVelocity(new Vector2f(h * moveSpeed, v * moveSpeed));
 		
 		if(Keyboard.isClicked('x')){
 			this.setAnimation(0);

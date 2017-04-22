@@ -74,6 +74,7 @@ public class StartLevel extends Level {
 
 			@Override
 			public void onClick(ClickType type) {
+				
 			}
 			
 		});

@@ -10,6 +10,7 @@ public class CircleCollider extends Collider {
 		super(parent);
 		this.radius = radius;
 		this.body = Physics.instance.getCircleBody(position, radius, this.type.type);
+		this.fixture = body.getFixtureList();
 	}
 	
 	public float getRadius(){

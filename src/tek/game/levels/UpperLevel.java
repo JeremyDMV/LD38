@@ -18,7 +18,7 @@ public class UpperLevel extends Level {
 	
 	public LargeObject large;
 	
-	public Music music;
+	//public Music music;
 	
 	@Override
 	public void start() {
@@ -37,15 +37,15 @@ public class UpperLevel extends Level {
 		scene.add(healthbar);
 		scene.add(healthtext);
 		
-		music = new Music("audio/mainmenu.ogg");
-		music.setLoop(true);
+		//music = new Music("audio/mainmenu.ogg");
+		//music.setLoop(true);
 		
-		Mixer.instance.addTo(music, "music");
+		//Mixer.instance.addTo(music, "music");
 		Mixer.instance.getChannel("music").setGain(1.0f);
 		
 		Mixer.instance.listener.setGain(1.0f);
 		
-		music.play();
+		//music.play();
 	}
 	
 	public void initObjects(){

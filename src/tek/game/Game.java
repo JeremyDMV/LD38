@@ -33,7 +33,7 @@ public class Game implements Interface {
 	public void start() {
 		setupDefaults();
 		
-		loadLevel(new StartLevel());
+		loadLevel(new UpperLevel());
 		
 		player = new Player();
 		player.transform.setPosition(10, 10);

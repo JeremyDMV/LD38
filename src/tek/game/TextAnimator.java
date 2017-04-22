@@ -9,7 +9,7 @@ public class TextAnimator {
 	
 	private float currentLength;
 	
-	public int speedMod = 3;
+	public int speedMod = 6;
 	
 	private float length = 100f;
 	private float timer = 0f;

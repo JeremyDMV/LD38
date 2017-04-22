@@ -12,6 +12,7 @@ public class BoxCollider extends Collider {
 		super(parent);
 		this.size = new Vector2f(size);
 		this.body = Physics.instance.getSquareBody(this.position, size, this.type.type);
+		this.fixture = body.getFixtureList();
 	}
 	
 	public BoxCollider(GameObject parent, Vector2f size, ColliderType type){
@@ -19,6 +20,7 @@ public class BoxCollider extends Collider {
 		this.type = type;
 		this.size = new Vector2f(size);
 		this.body = Physics.instance.getSquareBody(this.position, size, this.type.type);
+		this.fixture = body.getFixtureList();
 	}
 	
 	public Vector2f getSize(){

@@ -49,6 +49,10 @@ public abstract class Collider {
 		return parent;
 	}
 	
+	public void setSensor(boolean sensor){
+		body.m_fixtureList.setSensor(sensor);
+	}
+	
 	public void setCallback(CollisionCallback callback){
 		if(this.callback == callback)
 			return;
@@ -97,6 +101,11 @@ public abstract class Collider {
 		return gravityScale;
 	}
 	
+	public Vector2f getCenter(){
+		Vec2 c = body.getWorldCenter();
+		return new Vector2f(c.x, c.y);
+	}
+	
 	public Vector2f getPosition(){
 		Vec2 vec = body.getPosition();
 		return new Vector2f(vec.x, vec.y);
@@ -108,6 +117,7 @@ public abstract class Collider {
 		
 		this.position.set(vec);
 		body.setTransform(new Vec2(vec.x, vec.y), angle);
+		body.synchronizeTransform();
 	}
 	
 	public void setAngleDeg(float deg){
@@ -137,6 +147,15 @@ public abstract class Collider {
 	
 	public float getDensity(){
 		return density;
+	}
+	
+	public void setVelocity(Vector2f velocity){
+		body.setLinearVelocity(new Vec2(velocity.x, velocity.y));
+	}
+	
+	public Vector2f getVelocity(){
+		Vec2 vel = body.getLinearVelocity();
+		return new Vector2f(vel.x, vel.y);
 	}
 	
 	public static enum ColliderType {
