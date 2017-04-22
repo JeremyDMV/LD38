@@ -9,6 +9,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import tek.render.Shader;
+import tek.render.Texture;
 
 public class ParticleSystem {
 	public static Shader defaultShader = null;
@@ -19,7 +20,6 @@ public class ParticleSystem {
 	public float particleLife = 1; //in seconds (1000ms)
 	
 	public Vector3f startColor, endColor;  
-	
 	
 	public Shader shader = defaultShader; 
 	
@@ -32,6 +32,9 @@ public class ParticleSystem {
 	private float emitAccumulator = 0;
 	
 	private boolean emitting = false; // is it emitting
+	
+	public Texture texture;
+	public int subTexture;
 	
 	public Random random; //
 	private long seed; // the seed of the generator

@@ -3,6 +3,8 @@ package tek.runtime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.joml.Matrix4f;
+
 import tek.render.Camera;
 import tek.render.Shader;
 import tek.render.TextureSheet;
@@ -176,17 +178,23 @@ public class Scene {
 		psystem.render();
 		
 		psystem.shader.bind();
-		psystem.shader.set("projection", camera.getProjection());
-		psystem.shader.set("view", camera.getView());
-		psystem.shader.set("model", psystem.transform.mat);
+		psystem.shader.set("PROJECTION_MAT", camera.getProjection());
+		psystem.shader.set("VIEW_MAT", camera.getView());
 		
-		psystem.shader.set("particleZ", psystem.transform.layer * Transform.LAYER_MOD);
+		Matrix4f src = psystem.transform.mat;
+		
+		psystem.texture.bind();
+		psystem.shader.set("SUB_TEXTURE", 1);
+		TextureSheet sheet = TextureSheet.getSheet(psystem.texture);
+		
+		psystem.shader.set("SUB_SIZE", sheet.subSize);
+		psystem.shader.set("TEXTURE_OFFSET", sheet.getOffset(psystem.subTexture));
+		psystem.shader.set("TEXTURE_SIZE", sheet.texture.size);
 		
 		for(Particle particle : psystem.particles){
-			psystem.shader.set("particlePos", particle.position);
-			
-			//TODO Update the color transitions
-			psystem.shader.set("particleColor", psystem.startColor);
+			Matrix4f mat = new Matrix4f(src);
+			mat.translate(particle.position.x, particle.position.y, 0);
+			psystem.shader.set("MODEL_MAT", mat);
 			
 			GameObject.quad.draw();
 		}

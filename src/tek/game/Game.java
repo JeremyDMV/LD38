@@ -5,6 +5,7 @@ import org.joml.Vector2f;
 import tek.Util;
 import tek.Util.TextureBuffer;
 import tek.Window;
+import tek.audio.Listener;
 import tek.audio.Mixer;
 import tek.audio.Music;
 import tek.audio.Sound;
@@ -62,7 +63,6 @@ public class Game implements Interface {
 		UIScene.defaultShader = new Shader("ui", "shaders/ui.vs", "shaders/ui.fs");
 		ui = Scene.current.uiScene;
 		
-		
 		test = new UIFont("fonts/test.ttf", 16.0f);
 		
 		UIText.defaultFont = test;
@@ -74,6 +74,10 @@ public class Game implements Interface {
 		
 		sound = new Sound("audio/testsound.ogg");
 		source = new Source(sound);
+		source.setPosition(new Vector2f(10f, 10f));
+		source.setRolloffFactor(1f);
+		source.setMaxDistance(1f);
+		source.setReferenceDistance(1f);
 		
 		Mixer.instance.addTo(source, "sfx");
 		
@@ -85,8 +89,7 @@ public class Game implements Interface {
 		Shader shader = Shader.get("default");
 		Scene.current.defaultShader = shader;
 		
-		Shader pshader = new Shader("particle", "shaders/particle.vs", "shaders/particle.fs");
-		ParticleSystem.defaultShader = pshader;
+		ParticleSystem.defaultShader = shader;
 		
 		Window.instance.setIcon("textures/icon16.png", "textures/icon32.png");
 		
@@ -142,10 +145,16 @@ public class Game implements Interface {
 		Scene.current.add(dummy2);
 		
 		psystem = new ParticleSystem();
-		psystem.transform.setPosition(3f, 3f);
-		psystem.transform.setSize(1f,1f);
+		psystem.texture = sheet.texture;
+		psystem.subTexture = 4;
 		
-		psystem.shader = pshader;
+		psystem.transform.setPosition(3f, 3f);
+		psystem.transform.setSize(20,20f);
+		
+		psystem.particleSize = 5f;
+		
+		psystem.particleVelocity = new Vector2f(1f, 0f);
+		
 		psystem.emitLife = 2;
 		psystem.particleLife = 1000f; //1 second 
 		psystem.emitRate = 100;
@@ -170,8 +179,7 @@ public class Game implements Interface {
 	@Override
 	public void input(long delta) {
 		if(Keyboard.isClicked('c')){
-			System.out.println(ui.textures.size());
-		
+			psystem.emit();
 		}
 		
 		if(Keyboard.isClicked('i'))
@@ -186,6 +194,7 @@ public class Game implements Interface {
 				music.play();
 		
 		dummy.collider.applyLinearImpulse(new Vector2f(Keyboard.getButton("horizontal") * 10f, 0f), new Vector2f(0f, 0f));
+		Listener.instance.setPosition(dummy.transform.getPosition());
 	}
 
 	@Override

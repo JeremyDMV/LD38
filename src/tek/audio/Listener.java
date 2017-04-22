@@ -11,14 +11,23 @@ public class Listener {
 	public static Listener instance = null;
 	
 	private Vector3f position, orientation;
-	private FloatBuffer posBuffer, oriBuffer;
-	private float gain = 1.0f;
+	private FloatBuffer oriBuffer;
+	private float gain = 0.9f;
 	
 	{
 		position = new Vector3f();
 		orientation = new Vector3f();
-		posBuffer = BufferUtils.createFloatBuffer(3);
 		oriBuffer = BufferUtils.createFloatBuffer(6);
+		
+		oriBuffer.put(new float[]{
+			0, 1f, 0f,
+			orientation.x, orientation.y, orientation.z
+		});
+		oriBuffer.flip();
+		
+		AL10.alListenerf(AL10.AL_GAIN, gain);
+		AL10.alListener3f(AL10.AL_POSITION, position.x, position.y, position.z);
+		AL10.alListenerfv(AL10.AL_ORIENTATION, oriBuffer);
 	}
 	
 	protected Listener(){
@@ -47,35 +56,17 @@ public class Listener {
 	public void setPosition(Vector3f position){
 		if(position.equals(this.position))
 			return;
-		
-		posBuffer.clear();
-		posBuffer.put(new float[]{
-			position.x,
-			position.y,
-			position.z,
-		});
-		posBuffer.flip();
-		
 		this.position.set(position);
 		
-		AL10.alListenerfv(AL10.AL_POSITION, posBuffer);
+		AL10.alListener3f(AL10.AL_POSITION, position.x, position.y, position.z);
 	}
 	
 	public void setPosition(Vector2f position){
 		if(position.equals(this.position))
 			return;
-		
-		posBuffer.clear();
-		posBuffer.put(new float[]{
-			position.x,
-			position.y,
-			0f,
-		});
-		posBuffer.flip();
-		
 		this.position.set(position.x, position.y, 0f);
 		
-		AL10.alListenerfv(AL10.AL_POSITION, posBuffer);
+		AL10.alListener3f(AL10.AL_POSITION, position.x, position.y, 0f);
 	}
 	
 	public void setOrientation(Vector3f orientation){

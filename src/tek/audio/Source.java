@@ -4,6 +4,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.AL11;
 
 import static org.lwjgl.openal.AL10.*;
 
@@ -19,28 +20,39 @@ public class Source {
 	
 	public boolean oneshot = false;
 	
+	private float referenceDistance = 1.0f;
+	private float maxDistance = 10.0f;
+	private float rolloffFactor = 1f;
+	private boolean rolloff = true;
+	
 	private float gain = 1.0f;
 	
 	public Vector3f position;
 	
 	{
+		id = alGenSources();
+		
 		position = new Vector3f();
+		
+		if(rolloff){
+			AL10.alSourcei(id, AL10.AL_DISTANCE_MODEL, AL10.AL_INVERSE_DISTANCE);
+			AL10.alSourcef(id, AL10.AL_REFERENCE_DISTANCE, referenceDistance);
+			AL10.alSourcef(id, AL10.AL_ROLLOFF_FACTOR, rolloffFactor);
+			AL10.alSourcef(id, AL10.AL_MAX_DISTANCE, maxDistance);
+			
+			AL10.alSource3f(id, AL10.AL_POSITION, position.x, position.y, position.z);
+		}
 	}
 	
 	public Sound sound;
 	
 	public Source(){
-		id = alGenSources();
 	}
 	
 	public Source(Sound sound){
 		this.sound = sound;
 		
-		
-		id = alGenSources();
-		
 		AL10.alSourcei(id, AL10.AL_BUFFER, sound.id);
-		AL10.alSource3f(id, AL10.AL_POSITION, position.x, position.y, position.z);
 		
 		if(AL10.alGetError() != AL10.AL_NO_ERROR)
 			System.err.println("AL ERROR");
@@ -49,6 +61,10 @@ public class Source {
 	public void setPosition(Vector2f position){
 		this.position.set(position.x, position.y, 0f);
 		AL10.alSource3f(id, AL10.AL_POSITION, position.x, position.y, 0f);
+	}
+	
+	public Vector2f getPosition(){
+		return new Vector2f(position.x, position.y);
 	}
 	
 	public void setSound(Sound sound){
@@ -82,6 +98,47 @@ public class Source {
 	public void setGain(float gain){
 		this.gain = gain;
 		AL10.alSourcef(id, AL10.AL_GAIN, gain);
+	}
+	
+	public void setReferenceDistance(float ref){
+		if(ref == referenceDistance)
+			return;
+		referenceDistance = ref;
+		AL10.alSourcef(id, AL10.AL_REFERENCE_DISTANCE, ref);
+	}
+	
+	public float getReferenceDistance(){
+		return referenceDistance;
+	}
+	
+	public void setMaxDistance(float max){
+		if(max == maxDistance)
+			return;
+		maxDistance = max;
+		AL10.alSourcef(id, AL10.AL_MAX_DISTANCE, max);
+	}
+	
+	public float getMaxDistance(){
+		return maxDistance;
+	}
+	
+	public void setRolloffFactor(float rolloffFactor){
+		if(this.rolloffFactor == rolloffFactor)
+			return;
+		this.rolloffFactor = rolloffFactor;
+		AL10.alSourcef(id, AL10.AL_ROLLOFF_FACTOR, rolloffFactor);
+	}
+	
+	public void enableRolloff(){
+		if(rolloff)
+			return;
+		AL10.alSourcei(id, AL10.AL_DISTANCE_MODEL, AL10.AL_INVERSE_DISTANCE);
+	}
+	
+	public void disableRolloff(){
+		if(!rolloff)
+			return;
+		AL10.alSourcei(id, AL10.AL_DISTANCE_MODEL, AL10.AL_NONE);
 	}
 	
 	public float getGain(){

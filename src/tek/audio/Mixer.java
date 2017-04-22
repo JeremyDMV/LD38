@@ -28,11 +28,12 @@ public class Mixer {
 	
 	public Mixer(){
 		channels = new MixerChannel[DEFAULT_CHANNEL_COUNT];
-
-		listener = new Listener();
 			
 		//create OpenAL Instance
 		initialize();
+		
+		//setup the listener
+		listener = new Listener();
 		
 		instance = this;
 	}
