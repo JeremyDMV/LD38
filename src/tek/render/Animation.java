@@ -305,4 +305,13 @@ public class Animation {
 				&& oa.next == next && oa.src == src
 				&& oa.reverse == reverse;
 	}
+	
+	public static Animation getAnimation(String name, TextureSheet sheet, int start, int length, float frameRate){
+		int[] frames = new int[length];
+		for(int i=0;i<frames.length;i++){
+			frames[i] = start + i;
+		}
+		Animation a = new Animation(sheet, name, frameRate, frames);
+		return a;
+	}
 }

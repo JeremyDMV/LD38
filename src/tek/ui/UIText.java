@@ -12,6 +12,8 @@ public class UIText extends UIElement {
 	private String text;
 	public Vector3f color;
 	
+	public float r = 1.0f, g = 1.0f, b = 1.0f;
+	
 	private float scale = 1.0f;
 	
 	public UIFont font = defaultFont;
@@ -40,6 +42,12 @@ public class UIText extends UIElement {
 		if(text != null){
 			width = font.getWidth(text);
 		}
+	}
+	
+	public void setRGB(float r, float g, float b){
+		this.r = (r > 1) ? r / 255 : r;
+		this.g = (g > 1) ? g / 255 : g;
+		this.b = (b > 1) ? b / 255 : b;
 	}
 	
 	public void setText(String text){
@@ -78,7 +86,7 @@ public class UIText extends UIElement {
 	}
 	
 	public void draw(){
-		font.print(this.position.x, this.position.y, text);
+		font.print(this.position.x, this.position.y, text, r, g, b);
 	}
 	
 	@Override

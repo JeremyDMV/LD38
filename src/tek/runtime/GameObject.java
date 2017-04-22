@@ -1,5 +1,6 @@
 package tek.runtime;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import tek.audio.Source;
@@ -24,7 +25,7 @@ public abstract class GameObject {
 	public int subTexture = -1;
 	
 	public int currentAnimation = -1;
-	public Animation[] animations;
+	public ArrayList<Animation> animations;
 	
 	//sound 
 	public Source source;
@@ -32,9 +33,13 @@ public abstract class GameObject {
 	//physics
 	public Collider collider;
 	
+	public boolean flipX = false;
+	public boolean flipY = false;
+	
 	
 	{
 		transform = new Transform(this);
+		animations = new ArrayList<Animation>();
 	}
 	
 	public GameObject(){
@@ -50,7 +55,7 @@ public abstract class GameObject {
 		this.texture = gameObject.texture;
 		this.subTexture = gameObject.subTexture;
 		
-		this.animations = gameObject.animations;
+		this.animations = new ArrayList<Animation>(gameObject.animations);
 		this.currentAnimation = gameObject.currentAnimation;
 		
 		Start();
@@ -65,8 +70,8 @@ public abstract class GameObject {
 	
 	public void update(long delta){
 		if(currentAnimation != -1){
-			animations[currentAnimation].update((float)delta);
-			subTexture = animations[currentAnimation].getFrame();
+			animations.get(currentAnimation).update((float)delta);
+			subTexture = animations.get(currentAnimation).getFrame();
 		}
 		
 		if(source != null){
@@ -83,25 +88,26 @@ public abstract class GameObject {
 	public abstract void Update(long delta);
 	
 	public void playAnimation(){
-		animations[currentAnimation].play();
-		animations[currentAnimation].setLoop(false);
+		animations.get(currentAnimation).play();
 	}
 	
 	public void stopAnimation(){
 		if(currentAnimation != -1){
-			animations[currentAnimation].stop();
+			animations.get(currentAnimation).stop();
 		}
 	}
 	
 	
+	public void addAnimations(Animation[] anims){
+		for(Animation anim : anims)
+			addAnimation(anim);
+	}
+	
 	public void addAnimation(Animation anim){
 		if(animations == null){
-			animations = new Animation[1];
-			animations[0] = anim;
-		}else{
-			animations = Arrays.copyOf(animations, animations.length + 1);
-			animations[animations.length - 1] = anim;
+			animations = new ArrayList<Animation>();
 		}
+		animations.add(anim);
 	}
 	
 	public void setAnimation(int animation){
@@ -110,29 +116,26 @@ public abstract class GameObject {
 		
 		currentAnimation = animation;
 		
-		if(this.texture != animations[animation].getSource().texture)
-			this.texture = animations[animation].getSource().texture;
+		if(this.texture != animations.get(animation).getSource().texture)
+			this.texture = animations.get(animation).getSource().texture;
 	}
 	
 	public void setAnimation(String animationName){
-		if(animations[currentAnimation].getName().equals(animationName))
-			return;
+		if(currentAnimation != -1){
+			if(animations.get(currentAnimation).getName().equals(animationName))
+				return;
+		}
 		
 		int index = -1;
 		
-		for(int i=0;i<animations.length;i++){
-			if(animations[i].getName().equals(animationName)){
+		for(int i=0;i<animations.size();i++){
+			if(animations.get(i).getName().toLowerCase().equals(animationName.toLowerCase())){
 				index = i;
-				continue;
 			}
 		}
 		
-		//if no match found
-		if(index == -1)
-			return;
-		
-		if(this.texture != animations[index].getSource().texture)
-			this.texture = animations[index].getSource().texture;
+		if(this.texture != animations.get(index).getSource().texture)
+			this.texture = animations.get(index).getSource().texture;
 	}
 	
 	public void destroy(){

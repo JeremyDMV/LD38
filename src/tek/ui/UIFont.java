@@ -66,9 +66,11 @@ public class UIFont {
 		return fontHeight;
 	}
 	
-	public void print(float x, float y, String text){
+	public void print(float x, float y, String text, float r, float g, float b){
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texId);
+		
+		GL11.glColor3f(r, g, b);
 		
 		FloatBuffer xbuf = BufferUtils.createFloatBuffer(1);
 		FloatBuffer ybuf = BufferUtils.createFloatBuffer(1);

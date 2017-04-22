@@ -22,15 +22,11 @@ public class UIScene {
 	public ArrayList<UITexture> textures;
 	public ArrayList<UIText>    texts;
 	
-	public ArrayList<ClickType> clicks;
-	
 	public UIOptions options;
 	
 	{
 		textures = new ArrayList<UITexture>();
 		texts    = new ArrayList<UIText>();
-		clicks   = new ArrayList<ClickType>();
-		
 		size = new Vector2f();
 		
 		resized();
@@ -38,6 +34,11 @@ public class UIScene {
 	
 	public UIScene(){
 		
+	}
+	
+	public void clear(){
+		textures.clear();
+		texts.clear();
 	}
 	
 	public void resized(){
@@ -97,6 +98,51 @@ public class UIScene {
 			float x = (size.x - t.getWidth()) / 2f;
 			float y = (size.y - t.getHeight()) / 2f;
 			t.position.set(x, y);
+		}
+	}
+	
+	public void center(UIElement[] elements){
+		float min_x = Float.MAX_VALUE;
+		float max_x = Float.MIN_VALUE;
+		
+		float min_y = Float.MAX_VALUE;
+		float max_y = Float.MIN_VALUE;
+		
+		for(UIElement e : elements){
+			if(e instanceof UIText){
+				UIText u = (UIText)e;
+				
+				float w = u.getWidth() / 2f;
+				float h = u.getHeight() / 2f;
+				
+				min_x = Math.min(min_x, u.position.x - w);
+				max_x = Math.min(max_x, u.position.x + w);
+				
+				min_y = Math.min(min_y, u.position.y - h);
+				max_y = Math.min(max_y, u.position.y + h);
+			}else if(e instanceof UITexture){
+				UITexture u = (UITexture)e;
+				
+				float w = u.size.x / 2f;
+				float h = u.size.y / 2f;
+				
+				min_x = Math.min(min_x, u.position.x - w);
+				max_x = Math.min(max_x, u.position.x + w);
+				
+				min_y = Math.min(min_y, u.position.y - h);
+				max_y = Math.min(max_y, u.position.y + h);
+			}
+		}
+		
+		float width = max_x - min_x;
+		float height = max_y - min_y;
+		
+		float offset_x = (size.x - width) / 2f;
+		float offset_y = (size.y - height) / 2f;
+		
+		for(UIElement e : elements){
+			e.position.add(offset_x, offset_y);
+			e.updateMatrix();
 		}
 	}
 	

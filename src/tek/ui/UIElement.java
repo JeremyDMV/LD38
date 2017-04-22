@@ -23,6 +23,11 @@ public abstract class UIElement {
 		mat = new Matrix4f();
 	}
 
+	public void setCallback(UICallback callback){
+		callback.initialize(this);
+		this.callback = callback;
+	}
+	
 	public void onFocusEnter(){
 		if(callback != null)
 			callback.onFocusEnter();
@@ -96,6 +101,7 @@ public abstract class UIElement {
 	}
 	
 	public static interface UICallback {
+		public void initialize(UIElement e);
 		public void onFocusEnter();
 		public void onFocus();
 		public void onFocusExit();
