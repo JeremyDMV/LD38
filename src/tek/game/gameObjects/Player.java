@@ -10,10 +10,12 @@ import tek.runtime.physics.BoxCollider;
 import tek.runtime.physics.Collider.ColliderType;
 
 public class Player extends GameObject {
+	public static Player instance;
+	
 	public int maxHealth = 10;
 	public int health = maxHealth;
 	
-	public long hitTimer = 5000; //5 seconds
+	public long hitTimer = 500; //5 seconds
 	public long lastHit;
 	private boolean lastHitActive = false;
 	
@@ -21,18 +23,24 @@ public class Player extends GameObject {
 	public float walkSpeed = 6.0f;
 	public float runSpeed = 8.0f;
 	
+	private float idleRate = 5000f;
+	private float idleTimer = 0f;
 	
 	public Player(){
 		setCollider(new BoxCollider(this, new Vector2f(10f, 10f), ColliderType.DYNAMIC));
 		this.transform.setSize(10f, 10f);
-		this.subTexture = 1;
+		
+		this.transform.setLayer(5);
 		TextureSheet sheet = TextureSheet.getSheet("default");
 		this.texture = sheet.texture;
 		addAnimations(new Animation[]{
-				Animation.getAnimation("walk", sheet, 0, 3, 1000f / 20f), 
-				Animation.getAnimation("walk1", sheet, 4, 3, 1000f / 20f), 
-				Animation.getAnimation("walk2", sheet, 8, 3, 1000f / 20f), 
+				Animation.getAnimation("walk", sheet, 112, 4, 1000f / 10f), 
+				Animation.getAnimation("idle", sheet, 128, 5, 1000f / 20f), 
 		});
+		
+		this.animations.get(0).setLoop(true);
+		this.animations.get(1).setLoop(false);
+		instance = this;
 	}
 	
 	public void set(int health, Vector2f position){
@@ -70,7 +78,7 @@ public class Player extends GameObject {
 	}
 
 	public void input(long delta){
-		double adjustedDelta = (double)delta/1000d;
+		//double adjustedDelta = (double)delta/1000d;
 		float v = Keyboard.getButton("vertical");
 		float h = Keyboard.getButton("horizontal");
 		
@@ -80,13 +88,32 @@ public class Player extends GameObject {
 			flipX = true;
 		}
 		
+		if(h == 0 && v == 0){
+			idleTimer -= delta;
+			
+			if(currentAnimation != 1){
+				this.stopAnimation();
+				this.setAnimation(1);
+				this.playAnimation();
+				
+				idleTimer = idleRate;
+			}else{
+				setAnimation(1);
+			}
+			
+			if(idleTimer <= 0){
+				this.playAnimation();
+				idleTimer = idleRate;
+			}
+		}else{
+			if(!this.animations.get(currentAnimation).getName().equals("walk")){
+				this.setAnimation(0);
+				this.playAnimation();
+			}
+		}
+		
 		float moveSpeed = (float)(this.moveSpeed * 50);
 		collider.setVelocity(new Vector2f(h * moveSpeed, v * moveSpeed));
-		
-		if(Keyboard.isClicked('x')){
-			this.setAnimation(0);
-			this.playAnimation();
-		}
 	}
 	
 	@Override

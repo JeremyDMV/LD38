@@ -41,6 +41,11 @@ public class TextAnimator {
 		return lengthPerChar;
 	}
 	
+	public void setText(String text){
+		this.full = text;
+		reset();
+	}
+	
 	public String getFull(){
 		return full;
 	}

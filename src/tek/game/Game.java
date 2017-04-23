@@ -37,7 +37,7 @@ public class Game implements Interface {
 		
 		player = new Player();
 		player.transform.setPosition(10, 10);
-		player.transform.setLayer(-1);
+		player.transform.setLayer(3);
 		Scene.current.add(player);
 	}
 	

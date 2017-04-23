@@ -18,6 +18,10 @@ public class UIText extends UIElement {
 	
 	public UIFont font = defaultFont;
 	
+	
+	public boolean wrap = false;
+	public float wrapWidth = 720;
+	
 	{
 		color = new Vector3f(1f);
 	}
@@ -86,7 +90,10 @@ public class UIText extends UIElement {
 	}
 	
 	public void draw(){
-		font.printWrapped(this.position.x, this.position.y, scale, text, r, g, b, 300);
+		if(wrap)
+			font.printWrapped(this.position.x, this.position.y, scale, layer, text, r, g, b, wrapWidth);
+		else
+			font.print(this.position.x, this.position.y, scale, layer, text, r, g, b);
 	}
 	
 	@Override

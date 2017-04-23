@@ -19,6 +19,9 @@ public class ParticleSystem {
 	public float particleSize = 1; //in units
 	public float particleLife = 1; //in seconds (1000ms)
 	
+	public boolean useRadius = false;
+	public float radius = 1.0f;
+	
 	public Vector3f startColor, endColor;  
 	
 	public Shader shader = defaultShader; 
@@ -158,8 +161,17 @@ public class ParticleSystem {
 	}
 	
 	public Vector2f getRandomPosition(){
-		float x = random.nextFloat() * transform.size.x;
-		float y = random.nextFloat() * transform.size.y;
+		float x = random.nextFloat();
+		float y = random.nextFloat();
+		
+		if(useRadius){
+			x *= radius;
+			y *= radius;
+		}else{
+			x *= transform.size.x;
+			y *= transform.size.y;
+		}
+			
 		return new Vector2f(transform.position.x + x, transform.position.y + y).sub(transform.size.mul(0.5f, new Vector2f()));
 	}
 	

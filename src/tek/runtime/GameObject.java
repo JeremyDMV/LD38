@@ -26,6 +26,8 @@ public abstract class GameObject {
 	public Texture texture;
 	public int subTexture = -1;
 	
+	public int currentSubTexture = -1;
+	
 	public int currentAnimation = -1;
 	public ArrayList<Animation> animations;
 	
@@ -76,7 +78,9 @@ public abstract class GameObject {
 	public void update(long delta){
 		if(currentAnimation != -1){
 			animations.get(currentAnimation).update((float)delta);
-			subTexture = animations.get(currentAnimation).getFrame();
+			currentSubTexture = animations.get(currentAnimation).getFrame();
+		}else{
+			currentSubTexture = subTexture;
 		}
 		
 		if(source != null){
@@ -99,6 +103,7 @@ public abstract class GameObject {
 	public void stopAnimation(){
 		if(currentAnimation != -1){
 			animations.get(currentAnimation).stop();
+			currentSubTexture = subTexture;;
 		}
 	}
 	

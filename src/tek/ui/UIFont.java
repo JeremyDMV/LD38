@@ -12,6 +12,7 @@ import org.lwjgl.stb.STBTruetype;
 
 import tek.ResourceLoader;
 import tek.Window;
+import tek.runtime.Transform;
 
 public class UIFont {
 	private int texId;
@@ -103,10 +104,11 @@ public class UIFont {
 		return fontHeight;
 	}
 	
-	public void printWrapped(float x, float y, float scale, String text, float r, float g, float b, int wrapWidth){
+	public void printWrapped(float x, float y, float scale, int layer, String text, float r, float g, float b, float wrapWidth){
 		GL11.glPushMatrix();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texId);
+		GL11.glTranslatef(0, 0, layer * Transform.LAYER_MOD);
 		
 		GL11.glColor3f(r, g, b);
 		
@@ -159,10 +161,13 @@ public class UIFont {
 		GL11.glPopMatrix();
 	}
 	
-	public void print(float x, float y, float scale, String text, float r, float g, float b){
+	public void print(float x, float y, float scale, int layer, String text, float r, float g, float b){
 		GL11.glPushMatrix();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texId);
+		
+		
+		GL11.glTranslatef(0, 0, layer * Transform.LAYER_MOD);
 		
 		GL11.glColor3f(r, g, b);
 		

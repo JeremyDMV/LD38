@@ -145,10 +145,8 @@ public class Scene {
 					shader.set("FLIP_X", gameObject.flipX);
 					shader.set("FLIP_Y", gameObject.flipY);
 					
-					//shader.set("TEXTURE_REPEAT", gameObject.textureRepeat);
-					
 					if(TextureSheet.isTextureSheet(gameObject.texture)){
-						if(gameObject.subTexture != -1){
+						if(gameObject.currentSubTexture != -1){
 							shader.set("SUB_TEXTURE", true);
 							
 							TextureSheet sheet = TextureSheet.getSheet(gameObject.texture);
@@ -162,7 +160,7 @@ public class Scene {
 							}
 							
 						
-							shader.set("TEXTURE_OFFSET", sheet.getOffset(gameObject.subTexture));
+							shader.set("TEXTURE_OFFSET", sheet.getOffset(gameObject.currentSubTexture));
 							shader.set("TEXTURE_SIZE", sheet.texture.size);
 						}
 					}

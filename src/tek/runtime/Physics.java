@@ -28,7 +28,6 @@ public class Physics {
 	public ArrayList<Collider> colliders;
 	
 	public ContactTracker tracker;
-
 	
 	{
 		colliders = new ArrayList<Collider>();
